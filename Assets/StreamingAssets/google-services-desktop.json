@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "505384864654",
+    "project_id": "v-seum",
+    "storage_bucket": "v-seum.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:505384864654:android:276a5d35146ad0a8e932df",
+        "android_client_info": {
+          "package_name": "com.vseum.VSeum"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "505384864654-fi21amepa15mbrahkv7nn0meoo2hsj4j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyACxaryS2qIEnt_JvmBqD-QqjDaY7go2rs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "505384864654-fi21amepa15mbrahkv7nn0meoo2hsj4j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
