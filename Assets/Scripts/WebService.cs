@@ -45,18 +45,18 @@ public class WebService : MonoBehaviour
         }
     }
 
-    public void GetUserData(string userId)
+    public void GetUserData(string email, string password)
     {
-        StartCoroutine(getUserData(userId));
+        StartCoroutine(getUserData(email, password));
     }
 
-    private IEnumerator getUserData(string userId)
+    private IEnumerator getUserData(string email, string password)
     {
-        using (UnityWebRequest www = UnityWebRequest.Get($"{WebHost}getuserdata.php?uid={userId}"))
+        using (UnityWebRequest www = UnityWebRequest.Get($"{WebHost}getuserdata.php?uid={email}&pwid={password}"))
         {
             yield return www.SendWebRequest();
 
-            if (www.result == UnityWebRequest.Result.ConnectionError || www.result == UnityWebRequest.Result.ProtocolError)
+            if (www.isNetworkError || www.isHttpError)
                 Debug.Log(www.error);
             else
             {

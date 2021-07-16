@@ -1,5 +1,3 @@
-using Firebase;
-using Firebase.Auth;
 using SimpleJSON;
 using System.Collections;
 using TMPro;
@@ -10,11 +8,6 @@ using UnityEngine.Networking;
 public class AuthManager : MonoBehaviour
 {
     public static AuthManager instance;
-
-    //Firebase variables
-    [Header("Firebase")]
-    public FirebaseAuth auth;    
-    public FirebaseUser User;
 
     //Login variables
     [Header("Login")]
@@ -64,111 +57,6 @@ public class AuthManager : MonoBehaviour
         }
     }
 
-    public IEnumerator CheckAndFixDependancies()
-    {
-        var checkAndFixDependanciesTask = FirebaseApp.CheckAndFixDependenciesAsync();
-
-        yield return new WaitUntil(predicate: () => checkAndFixDependanciesTask.IsCompleted);
-
-        var dependencyResult = checkAndFixDependanciesTask.Result;
-
-        if (dependencyResult == DependencyStatus.Available)
-            {
-                //If they are avalible Initialize Firebase
-                InitializeFirebase();
-            }
-            else
-            {
-                Debug.LogError("Could not resolve all Firebase dependencies: " + dependencyResult);
-            }
-    }
-
-    private void InitializeFirebase()
-    {
-        //Set the authentication instance object
-        auth = FirebaseAuth.DefaultInstance;
-        StartCoroutine(CheckAutoLogin());
-
-        auth.StateChanged += AuthStateChanged;
-        AuthStateChanged(this, null);
-    }
-
-    private IEnumerator CheckAutoLogin()
-    {
-        yield return new WaitForEndOfFrame();
-
-        if (User != null)
-        {
-            var reloadUserTask = User.ReloadAsync();
-
-            yield return new WaitUntil(predicate: () => reloadUserTask.IsCompleted);
-
-            AutoLogin();
-        }
-        else
-        {
-            UIHandler.instance.LoginScreen();
-            UIHandler.instance.SettingsScreen();
-        }
-        
-        // GameManager.instance.loader.SetActive(false);
-    }
-
-    private void AutoLogin()
-    {
-        if (User != null)
-        {
-                Debug.Log($"IsEmailVerified {User.IsEmailVerified}");
-            if (User.IsEmailVerified)
-            {
-                // PlayerManager.instance.InitializeUser(User.UserId, User.Email);
-                UIHandler.instance.HomeScreen();
-                UIHandler.instance.EditScreen();
-            }
-            else
-            {
-                StartCoroutine(SendVerificationEmail());
-            }
-        }
-        else
-        {
-            
-            UIHandler.instance.LoginScreen();
-
-        }
-    }
-    private void AuthStateChanged(object sender, System.EventArgs e)
-    {
-        if (auth.CurrentUser != User)
-        {
-            bool signedIn = User != auth.CurrentUser && auth.CurrentUser != null;
-
-            if (!signedIn && User != null)
-            {
-                Debug.Log("Signed out");
-                UIHandler.instance.LoginScreen();
-                UIHandler.instance.SettingsScreen();
-            }
-
-            User = auth.CurrentUser;
-
-            if (signedIn)
-            {
-                Debug.Log($"Signed in: {User.IsEmailVerified}");
-                if (User.IsEmailVerified)
-                {
-                    UIHandler.instance.HomeScreen();
-                    UIHandler.instance.EditScreen();
-                }
-                else
-                {
-                    UIHandler.instance.LoginScreen();
-                    UIHandler.instance.SettingsScreen();
-                }
-            }
-        }
-    }
-
     public void ClearInputs()
     {
         nameRegisterField.text = "";
@@ -196,56 +84,51 @@ public class AuthManager : MonoBehaviour
 
     private IEnumerator Login(string _email, string _password)
     {
-        //Call the Firebase auth signin function passing the email and password
-        var LoginTask = auth.SignInWithEmailAndPasswordAsync(_email, _password);
-        //Wait until the task completes
-        yield return new WaitUntil(predicate: () => LoginTask.IsCompleted);
+        WWWForm form = new WWWForm();
+        form.AddField("Email", _email);
+        form.AddField("Password", Cryptography.GetSHA512(_password));
 
-        if (LoginTask.Exception != null)
+        using (var w = UnityWebRequest.Post($"{WebService.instance.WebHost}adduser.php", form))
         {
-            //If there are errors handle them
-            Debug.LogWarning(message: $"Failed to register task with {LoginTask.Exception}");
-            FirebaseException firebaseEx = LoginTask.Exception.GetBaseException() as FirebaseException;
-            AuthError errorCode = (AuthError)firebaseEx.ErrorCode;
-
-            string message = "Login Failed!";
-            switch (errorCode)
+            yield return w.SendWebRequest();
+            if (w.isNetworkError || w.isHttpError)
             {
-                case AuthError.MissingEmail:
+                Debug.LogError(w.error);
+            }
+            
+            string result = w.downloadHandler.text;
+            string message = "Login Success!";
+            switch (result)
+            {
+                case "Missing Email":
                     message = "Missing Email";
                     break;
-                case AuthError.MissingPassword:
+                case "Missing Password":
                     message = "Missing Password";
                     break;
-                case AuthError.WrongPassword:
+                case "Wrong Password":
                     message = "Wrong Password";
                     break;
-                case AuthError.InvalidEmail:
+                case "Invalid Email":
                     message = "Invalid Email";
                     break;
-                case AuthError.UserNotFound:
+                case "User not found":
                     message = "Account does not exist";
                     break;
             }
-            UIHandler.instance.ShowModalSettings(message, true);
+            if (message == "Login Success!")
+            {
+                // AccountManager.instance.InitializeUser(User.UserId, User.Email);
+
+                UIHandler.instance.HomeScreen();
+                UIHandler.instance.EditScreen();
+
+            }
+            else
+            {
+                UIHandler.instance.ShowModalSettings(message, true);
+            }
             Debug.Log("[Login] " + message);
-        }
-        else
-        {
-            //User is now logged in
-            //Now get the result
-            User = LoginTask.Result;
-            AccountManager.instance.InitializeUser(User.UserId, User.Email);
-
-            // TODO: edit filends
-            usernameEditRegisterField.text = AccountManager.instance.Name;
-            emailEditRegisterField.text = AccountManager.instance.Email;
-
-            UIHandler.instance.HomeScreen();
-            UIHandler.instance.EditScreen();
-
-            Debug.LogFormat("User signed in successfully: {0} ({1})", User.DisplayName, AccountManager.instance.UserToken);
-            Debug.Log("[Login] Logged In");
         }
     }
 
@@ -274,126 +157,24 @@ public class AuthManager : MonoBehaviour
         }
         else 
         {
-            //Call the Firebase auth signin function passing the email and password
-            var RegisterTask = auth.CreateUserWithEmailAndPasswordAsync(_email, _password);
-            //Wait until the task completes
-            yield return new WaitUntil(predicate: () => RegisterTask.IsCompleted);
+            WWWForm form = new WWWForm();
+            form.AddField("Name", _name);
+            form.AddField("Surname", _surname);
+            form.AddField("Email", _email);
+            form.AddField("Password", Cryptography.GetSHA512(_password));
 
-            if (RegisterTask.Exception != null)
+            using (var w = UnityWebRequest.Post($"{WebService.instance.WebHost}adduser.php", form))
             {
-                //If there are errors handle them
-                Debug.LogWarning(message: $"Failed to register task with {RegisterTask.Exception}");
-                FirebaseException firebaseEx = RegisterTask.Exception.GetBaseException() as FirebaseException;
-                AuthError errorCode = (AuthError)firebaseEx.ErrorCode;
-
-                string message = "Register Failed!";
-                switch (errorCode)
+                yield return w.SendWebRequest();
+                if (w.isNetworkError || w.isHttpError)
                 {
-                    case AuthError.MissingEmail:
-                        message = "Missing Email";
-                        break;
-                    case AuthError.MissingPassword:
-                        message = "Missing Password";
-                        break;
-                    case AuthError.WeakPassword:
-                        message = "Weak Password";
-                        break;
-                    case AuthError.EmailAlreadyInUse:
-                        message = "Email Already In Use";
-                        break;
+                    Debug.LogError(w.error);
                 }
-                ClearInputs();
-                UIHandler.instance.ShowModalSettings(message, true);
-                Debug.Log("[Registration] " + message);
             }
-            else
-            {
-                //User has now been created
-                //Now get the result
-                User = RegisterTask.Result;
-
-                if (User != null)
-                {
-                    //Create a user profile and set the username
-                    UserProfile profile = new UserProfile{DisplayName = _name};
-
-                    //Call the Firebase auth update user profile function passing the profile with the username
-                    var ProfileTask = User.UpdateUserProfileAsync(profile);
-                    //Wait until the task completes
-                    yield return new WaitUntil(predicate: () => ProfileTask.IsCompleted);
-
-                    if (ProfileTask.Exception != null)
-                    {
-                        //If there are errors handle them
-                        Debug.LogWarning(message: $"Failed to register task with {ProfileTask.Exception}");
-                        FirebaseException firebaseEx = ProfileTask.Exception.GetBaseException() as FirebaseException;
-                        AuthError errorCode = (AuthError)firebaseEx.ErrorCode;
-                        Debug.Log("[Registration] Username Set Failed!");
-                    }
-                    else
-                    {
-                        WWWForm form = new WWWForm();
-                        form.AddField("UserId", User.UserId);
-                        form.AddField("Name", _name);
-                        form.AddField("Surname", _surname);
-                        form.AddField("EmailVerified", 0);
-
-                        using (var w = UnityWebRequest.Post($"{WebService.instance.WebHost}adduser.php", form))
-                        {
-                            yield return w.SendWebRequest();
-                            if (w.result == UnityWebRequest.Result.ConnectionError || w.result == UnityWebRequest.Result.ProtocolError)
-                            {
-                                Debug.LogError(w.error);
-                            }
-                            else
-                            {
-                                StartCoroutine(SendVerificationEmail());
-                            }
-                        }
-                        ClearInputs();
+            ClearInputs();
                         
-                        //Now return to login screen
-                        UIHandler.instance.LoginScreen();
-                    }
-                }
-            }
-        }
-    }
-
-    private IEnumerator SendVerificationEmail()
-    {
-        if (User != null)
-        {
-            var mailTask = User.SendEmailVerificationAsync();
-
-            yield return new WaitUntil(predicate: () => mailTask.IsCompleted);
-
-            if (mailTask.Exception != null)
-            {
-                // FirebaseException firebaseException = (FirebaseException)mailTask.Exception.GetBaseException();
-                // AuthError error = (AuthError)firebaseException.ErrorCode;
-
-                // string output = "Unkown error, try again";
-
-                // switch (error)
-                // {
-                //     case AuthError.Cancelled:
-                //         output = "Verification task was cancelled";
-                //     break;
-                //     case AuthError.InvalidRecipientEmail:
-                //         output = "Invalid Email";
-                //     break;
-                //     case AuthError.TooManyRequests:
-                //         output = "Too many requests";
-                //     break;
-                // }
-
-                // UIHandler.instance.AwaitVerification(false, User.Email, output);
-            }
-            else
-            {
-                UIHandler.instance.AwaitVerification(true, User.Email, null);
-            }
+                //Now return to login screen
+            UIHandler.instance.LoginScreen();
         }
     }
 }

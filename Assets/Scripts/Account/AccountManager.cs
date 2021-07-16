@@ -64,10 +64,9 @@ public class AccountManager : MonoBehaviour
         _surname = surname;
     }
 
-    public void InitializeUser(string userId, string email)
+    public void InitializeUser(string email, string password)
     {
-        _userToken = userId;
         _email = email;
-        WebService.instance.GetUserData(userId);
+        WebService.instance.GetUserData(_email, password);
     }
 }
