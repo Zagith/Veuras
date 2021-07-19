@@ -1,5 +1,6 @@
 using SimpleJSON;
 using System.Collections;
+using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -88,6 +89,7 @@ public class AuthManager : MonoBehaviour
         form.AddField("Email", _email);
         form.AddField("Password", Cryptography.GetSHA512(_password));
 
+        Debug.Log(Cryptography.GetSHA512(_password));
         using (UnityWebRequest w = UnityWebRequest.Post($"{WebService.instance.WebHost}login.php", form))
         {
             yield return w.SendWebRequest();
@@ -106,27 +108,24 @@ public class AuthManager : MonoBehaviour
                 case "Missing Password":
                     message = "Missing Password";
                     break;
-                case "Wrong Password":
-                    message = "Wrong Password";
-                    break;
                 case "Invalid Email":
-                    message = "Invalid Email";
-                    break;
-                case "User not found":
-                    message = "Account does not exist";
+                    message = "Dati Errati";
                     break;
             }
             if (message == "Login Success!")
             {
-                AccountManager.instance.InitializeUser(_email, _password);
+                string results = w.downloadHandler.text;
+                Debug.Log(results);
+                JSONArray jsonArray = JSON.Parse(Regex.Replace(results, @"\s+", "")) as JSONArray;
+                AccountManager.instance.InitializeUser(_email, jsonArray[0].AsObject["Name"], jsonArray[0].AsObject["Surname"]);
 
                 UIHandler.instance.HomeScreen();
-                UIHandler.instance.EditScreen();
 
             }
             else
             {
-                UIHandler.instance.ShowModalSettings(message, true);
+                Debug.Log($"[ERROR] {message}");
+                // UIHandler.instance.ShowModalSettings(message, true);
             }
             Debug.Log("[Login] " + message);
         }
