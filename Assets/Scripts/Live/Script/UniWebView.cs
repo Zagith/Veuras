@@ -200,10 +200,9 @@ public class UniWebView: MonoBehaviour {
     private UniWebViewNativeListener listener;
 
     private bool isPortrait;
-    [SerializeField]
 
     #pragma warning disable 0649 
-    private string urlOnStart;
+    public string urlOnStart;
     [SerializeField]
     private bool showOnStart = false;
 

@@ -23,7 +23,7 @@ public class WebService : MonoBehaviour
     {
         Instantiate();
     }
-
+    
     // Update is called once per frame
     void Update()
     {
@@ -42,6 +42,26 @@ public class WebService : MonoBehaviour
         {
             Destroy(instance.gameObject);
             instance = this;
+        }
+    }
+
+    public void GetLives()
+    {
+        StartCoroutine(getLives());
+    }
+    private IEnumerator getLives()
+    {
+        using (UnityWebRequest w = UnityWebRequest.Get($"{WebService.instance.WebHost}getlives.php"))
+        {
+            yield return w.SendWebRequest();
+            if (w.isNetworkError || w.isHttpError)
+            {
+                Debug.LogError(w.error);
+            }
+            
+            string results = w.downloadHandler.text;
+            JSONArray jsonArray = JSON.Parse(Regex.Replace(results, @"\s+", " ")) as JSONArray;
+            LiveManager.instance.UpdateLiveList(jsonArray);
         }
     }
 }
