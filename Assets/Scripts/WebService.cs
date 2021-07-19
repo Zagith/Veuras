@@ -9,7 +9,7 @@ using UnityEngine.Networking;
 public class WebService : MonoBehaviour
 {
     public static WebService instance;
-    protected string _webHost = "http://lozioconsiglia.it/vseum/";
+    protected string _webHost = "https://veruas.enjinia.it/";
 
     public string WebHost 
     {

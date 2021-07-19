@@ -88,7 +88,7 @@ public class AuthManager : MonoBehaviour
         form.AddField("Email", _email);
         form.AddField("Password", Cryptography.GetSHA512(_password));
 
-        using (var w = UnityWebRequest.Post($"{WebService.instance.WebHost}adduser.php", form))
+        using (UnityWebRequest w = UnityWebRequest.Post($"{WebService.instance.WebHost}login.php", form))
         {
             yield return w.SendWebRequest();
             if (w.isNetworkError || w.isHttpError)
@@ -118,7 +118,7 @@ public class AuthManager : MonoBehaviour
             }
             if (message == "Login Success!")
             {
-                // AccountManager.instance.InitializeUser(User.UserId, User.Email);
+                AccountManager.instance.InitializeUser(_email, _password);
 
                 UIHandler.instance.HomeScreen();
                 UIHandler.instance.EditScreen();
@@ -162,8 +162,8 @@ public class AuthManager : MonoBehaviour
             form.AddField("Surname", _surname);
             form.AddField("Email", _email);
             form.AddField("Password", Cryptography.GetSHA512(_password));
-
-            using (var w = UnityWebRequest.Post($"{WebService.instance.WebHost}adduser.php", form))
+            
+            using (UnityWebRequest w = UnityWebRequest.Post($"{WebService.instance.WebHost}adduser.php", form))
             {
                 yield return w.SendWebRequest();
                 if (w.isNetworkError || w.isHttpError)
@@ -171,10 +171,10 @@ public class AuthManager : MonoBehaviour
                     Debug.LogError(w.error);
                 }
             }
-            ClearInputs();
+            // ClearInputs();
                         
                 //Now return to login screen
-            UIHandler.instance.LoginScreen();
+            // UIHandler.instance.LoginScreen();
         }
     }
 }
