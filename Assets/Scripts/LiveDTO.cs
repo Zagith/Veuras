@@ -5,5 +5,6 @@ public class LiveDTO
     public string Name {get; set;}
     public string Link {get; set;}
     public DateTime LiveDate {get; set;}
+    public string CoverImage {get; set;}
         
 }

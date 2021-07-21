@@ -51,7 +51,8 @@ public class LiveManager : MonoBehaviour
                 LiveId = list[i].AsObject["LiveId"],
                 Name = list[i].AsObject["Nome"],
                 Link = list[i].AsObject["Link"],
-                LiveDate = DateTime.ParseExact(list[i].AsObject["Inizio"], "yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture)
+                LiveDate = DateTime.ParseExact(list[i].AsObject["Inizio"], "yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture),
+                CoverImage = list[i].AsObject["Copertina"]
             };
             LiveManager.instance.liveList.Add(live);
         }
@@ -67,6 +68,8 @@ public class LiveManager : MonoBehaviour
 
             UniWebView stream = liveList.transform.GetChild(0).GetComponent<UniWebView>();
             stream.urlOnStart = $"{link}?link={live.Link}";
+            liveList.SetActive(false);
         }
+        CategoryManager.instance.InitializeCategory();
     }
 }
