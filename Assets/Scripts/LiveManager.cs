@@ -80,6 +80,6 @@ public class LiveManager : MonoBehaviour
 
     public void GoToLive(string name)
     {
-        liveListGB.Where(n => n.name == $"live {name}").FirstOrDefault().SetActive(true);
+        UIHandler.instance.LiveScreen(liveListGB.Where(n => n.name == $"live {name}").FirstOrDefault());
     }
 }
