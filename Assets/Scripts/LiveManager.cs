@@ -63,13 +63,19 @@ public class LiveManager : MonoBehaviour
     {
         foreach (LiveDTO live in liveList)
         {
-            GameObject liveList = Instantiate(livePrefab);
-            liveList.transform.SetParent(listGB, false);
+            GameObject liveList1 = Instantiate(livePrefab);
+            liveList1.transform.SetParent(listGB, false);
 
-            UniWebView stream = liveList.transform.GetChild(0).GetComponent<UniWebView>();
+            UniWebView stream = liveList1.transform.GetChild(0).GetComponent<UniWebView>();
             stream.urlOnStart = $"{link}?link={live.Link}";
-            liveList.SetActive(false);
+            liveList1.name = $"live {live.Name}";
+            liveList1.SetActive(false);
         }
         CategoryManager.instance.InitializeCategory();
+    }
+
+    public void GoToLive(string name)
+    {
+        GameObject.Find($"live {name}").SetActive(true);
     }
 }

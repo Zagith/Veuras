@@ -124,7 +124,7 @@ public class WebService : MonoBehaviour
 
             }
 
-            if (singlePageCount == 3 && i < liveList.Count)
+            if (singlePageCount == 2 && i < liveList.Count)
             {
                 singlePageCount = 0;
                 itemPage = 0;
@@ -141,10 +141,7 @@ public class WebService : MonoBehaviour
             {
                 case 1:
                     Destroy(liveListUI.livesList[1]);
-                    Destroy(liveListUI.livesList[2]);
-                break;
-                case 2:
-                    Destroy(liveListUI.livesList[2]);
+                    categoryAttributes.blurGB.SetActive(false);
                 break;
             }
         }

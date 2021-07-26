@@ -11,4 +11,9 @@ public class CategoryPrefab : MonoBehaviour
 
     public List<GameObject> livesList;
 
+    public void OpenLive(int value)
+    {
+        LiveManager.instance.GoToLive(livesList[value].name);
+    }
+
 }
