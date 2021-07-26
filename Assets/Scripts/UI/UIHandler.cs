@@ -9,19 +9,12 @@ public class UIHandler : MonoBehaviour
     [Header("Page Components")]
     public GameObject loginUI;
     public GameObject registerUI;
-    public GameObject editUI;
+    public GameObject singMethod;
 
     [Header("Pages")]
     public GameObject homeUI;
-    public GameObject albumUI;
-    public GameObject settingsUI;
-    public GameObject animalInfo;
-    public GameObject charStatUI;
-    public GameObject characterPackagesUI;
-    public GameObject unpackPackagesUI;
-    public GameObject noPackagesUI;
-    public GameObject completedBook;
-    public GameObject noCompletedBook;
+    public GameObject loginmethodUI;
+    public GameObject openingUI;
 
 
     [Header("Modals")]
@@ -47,20 +40,26 @@ public class UIHandler : MonoBehaviour
         {
             loginUI.SetActive(true);
             registerUI.SetActive(false);
-            editUI.SetActive(false);
+            singMethod.SetActive(false);
         }
         public void RegisterScreen() // Register button
         {
             loginUI.SetActive(false);
             registerUI.SetActive(true);
-            editUI.SetActive(false);
+            singMethod.SetActive(false);
         }
 
-        public void EditScreen()
+        public void SignMethodScreen()
         {
             loginUI.SetActive(false);
             registerUI.SetActive(false);
-            editUI.SetActive(true);
+            singMethod.SetActive(true);
+        }
+
+        public void LiveScreen(GameObject live)
+        {
+            live.SetActive(true);
+            homeUI.SetActive(false);
         }
 
     #endregion
@@ -69,25 +68,14 @@ public class UIHandler : MonoBehaviour
 
         public void HomeScreen()
         {
-            albumUI.SetActive(false);
-            settingsUI.SetActive(false);
             homeUI.SetActive(true);
-            animalInfo.SetActive(false);
-            charStatUI.SetActive(false);
-            characterPackagesUI.SetActive(false);
-            unpackPackagesUI.SetActive(false);
-            noPackagesUI.SetActive(false);
+            loginmethodUI.SetActive(false);
         }
-        public void SettingsScreen()
+        public void MethodLoginScreen()
         {
-            albumUI.SetActive(false);
-            settingsUI.SetActive(true);
+            loginmethodUI.SetActive(true);
             homeUI.SetActive(false);
-            animalInfo.SetActive(false);
-            charStatUI.SetActive(false);
-            characterPackagesUI.SetActive(false);
-            unpackPackagesUI.SetActive(false);
-            noPackagesUI.SetActive(false);
+            openingUI.SetActive(false);
         }
 
     #endregion
@@ -103,21 +91,6 @@ public class UIHandler : MonoBehaviour
         {
             settingsErrorModal.windowDescription.text = message;
             settingsErrorModal.OpenWindow();
-        }
-    }
-
-    public void AwaitVerification(bool _mailSent, string _email, string _output)
-    {
-        // verify mail ui set active 
-        // clear outputs
-
-        if (_mailSent)
-        {
-           UIHandler.instance.ShowModalSettings($"Ti è stata mandata una mail di verifica all'indiritto {_email}");
-        }
-        else
-        {
-            UIHandler.instance.ShowModalSettings(_output, true);
         }
     }
 }
