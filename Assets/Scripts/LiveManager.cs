@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SimpleJSON;
 using UnityEngine;
 
@@ -16,6 +17,8 @@ public class LiveManager : MonoBehaviour
 
     [Header("Settings")]
     [SerializeField] string link = "";
+
+    public List<GameObject> liveListGB = new List<GameObject>();
 
     // Start is called before the first frame update
     void Awake()
@@ -69,6 +72,7 @@ public class LiveManager : MonoBehaviour
             UniWebView stream = liveList1.transform.GetChild(0).GetComponent<UniWebView>();
             stream.urlOnStart = $"{link}?link={live.Link}";
             liveList1.name = $"live {live.Name}";
+            liveListGB.Add(liveList1.gameObject);
             liveList1.SetActive(false);
         }
         CategoryManager.instance.InitializeCategory();
@@ -76,6 +80,6 @@ public class LiveManager : MonoBehaviour
 
     public void GoToLive(string name)
     {
-        GameObject.Find($"live {name}").SetActive(true);
+        liveListGB.Where(n => n.name == $"live {name}").FirstOrDefault().SetActive(true);
     }
 }
