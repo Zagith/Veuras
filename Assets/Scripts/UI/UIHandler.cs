@@ -1,5 +1,7 @@
 using Michsky.UI.ModernUIPack;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class UIHandler : MonoBehaviour
 {
@@ -10,6 +12,8 @@ public class UIHandler : MonoBehaviour
     public GameObject loginUI;
     public GameObject registerUI;
     public GameObject singMethod;
+    public TMP_Text titleText;
+    public Button backButtonStart;
 
     [Header("Pages")]
     public GameObject homeUI;
@@ -34,6 +38,12 @@ public class UIHandler : MonoBehaviour
         }
     }
 
+    void Start()
+    {
+        homeUI.SetActive(false);
+        loginmethodUI.SetActive(false);
+    }
+
     #region Page components change function
 
         public void LoginScreen() //Back button
@@ -41,12 +51,20 @@ public class UIHandler : MonoBehaviour
             loginUI.SetActive(true);
             registerUI.SetActive(false);
             singMethod.SetActive(false);
+            titleText.text = "Log In";
+            titleText.gameObject.SetActive(true);
+            backButtonStart.onClick.AddListener(SignMethodScreen);
+            backButtonStart.gameObject.SetActive(true);
         }
         public void RegisterScreen() // Register button
         {
             loginUI.SetActive(false);
             registerUI.SetActive(true);
             singMethod.SetActive(false);
+            titleText.text = "Sign In";
+            titleText.gameObject.SetActive(true);
+            backButtonStart.onClick.AddListener(SignMethodScreen);
+            backButtonStart.gameObject.SetActive(true);
         }
 
         public void SignMethodScreen()
@@ -54,6 +72,8 @@ public class UIHandler : MonoBehaviour
             loginUI.SetActive(false);
             registerUI.SetActive(false);
             singMethod.SetActive(true);
+            titleText.gameObject.SetActive(false);
+            backButtonStart.gameObject.SetActive(false);
         }
 
         public void LiveScreen(GameObject live)

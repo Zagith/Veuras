@@ -118,9 +118,8 @@ public class AuthManager : MonoBehaviour
                 Debug.Log(results);
                 JSONArray jsonArray = JSON.Parse(Regex.Replace(results, @"\s+", "")) as JSONArray;
                 AccountManager.instance.InitializeUser(_email, jsonArray[0].AsObject["Name"], jsonArray[0].AsObject["Surname"]);
-
+                AccountManager.instance.SetAutoLogin(_email, _password, jsonArray[0].AsObject["Name"], jsonArray[0].AsObject["Surname"]);
                 UIHandler.instance.HomeScreen();
-
             }
             else
             {
@@ -170,10 +169,8 @@ public class AuthManager : MonoBehaviour
                     Debug.LogError(w.error);
                 }
             }
-            // ClearInputs();
-                        
-                //Now return to login screen
-            // UIHandler.instance.LoginScreen();
+            ClearInputs();
+            StartCoroutine(Login(_email, _password));
         }
     }
 }

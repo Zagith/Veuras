@@ -64,4 +64,19 @@ public class AccountManager : MonoBehaviour
         _surname = surname;
         _email = email;
     }
+
+    public void SetAutoLogin(string email, string password, string name, string surname)
+    {
+        PlayerPrefs.SetString("Email", email);
+        PlayerPrefs.SetString("Password", password);
+        PlayerPrefs.SetString("Name", name);
+        PlayerPrefs.SetString("Surname", surname);
+    }
+
+    public void InitializeUserAutoLogin()
+    {
+        _name = PlayerPrefs.GetString("Name");
+        _surname = PlayerPrefs.GetString("Surname");
+        _email = PlayerPrefs.GetString("Email");
+    }
 }
