@@ -52,7 +52,7 @@ public class UIHandler : MonoBehaviour
             registerUI.SetActive(false);
             singMethod.SetActive(false);
             titleText.text = "Log In";
-            titleText.gameObject.SetActive(true);
+            titleText.gameObject.transform.parent.gameObject.SetActive(true);
             backButtonStart.onClick.AddListener(SignMethodScreen);
             backButtonStart.gameObject.SetActive(true);
         }
@@ -62,7 +62,7 @@ public class UIHandler : MonoBehaviour
             registerUI.SetActive(true);
             singMethod.SetActive(false);
             titleText.text = "Sign In";
-            titleText.gameObject.SetActive(true);
+            titleText.gameObject.transform.parent.gameObject.SetActive(true);
             backButtonStart.onClick.AddListener(SignMethodScreen);
             backButtonStart.gameObject.SetActive(true);
         }
@@ -72,7 +72,7 @@ public class UIHandler : MonoBehaviour
             loginUI.SetActive(false);
             registerUI.SetActive(false);
             singMethod.SetActive(true);
-            titleText.gameObject.SetActive(false);
+            titleText.gameObject.transform.parent.gameObject.SetActive(false);
             backButtonStart.gameObject.SetActive(false);
         }
 
@@ -80,6 +80,12 @@ public class UIHandler : MonoBehaviour
         {
             live.SetActive(true);
             homeUI.SetActive(false);
+        }
+
+        public void CLoseLive(GameObject live)
+        {
+            live.SetActive(false);
+            homeUI.SetActive(true);
         }
 
     #endregion
@@ -90,6 +96,7 @@ public class UIHandler : MonoBehaviour
         {
             homeUI.SetActive(true);
             loginmethodUI.SetActive(false);
+            openingUI.SetActive(false);
         }
         public void MethodLoginScreen()
         {

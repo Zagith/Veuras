@@ -76,7 +76,7 @@ public class WebService : MonoBehaviour
         int pageCount = 1;
         int singlePageCount = 0;
         int itemPage = 0;
-        CategoryAttributes categoryAttributes = CategoryManager.instance.transform.GetChild(0).GetComponent<CategoryAttributes>();
+        CategoryAttributes categoryAttributes = CategoryManager.instance.categoryParent.transform.GetChild(0).GetComponent<CategoryAttributes>();
         GameObject livePrefab = null;
         GameObject listGB = categoryAttributes.viewPort;
         List<LiveDTO> liveList = LiveManager.instance.liveList;

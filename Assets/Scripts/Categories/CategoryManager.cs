@@ -9,6 +9,7 @@ public class CategoryManager : MonoBehaviour
     public static CategoryManager instance;
 
     public GameObject incomingCategory;
+    public GameObject categoryParent;
 
     void Awake()
     {
