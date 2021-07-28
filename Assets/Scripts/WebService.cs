@@ -116,6 +116,7 @@ public class WebService : MonoBehaviour
                         texture.LoadImage(bytes);
                         Sprite sprite = Sprite.Create(texture, new Rect(0,0, texture.width, texture.height), new Vector2(.5f,.5f));    
                         liveListUI.liveImage[itemPage].GetComponent<Image>().sprite = sprite;
+                        liveList[i].Sprite = sprite;
                         liveListUI.liveImage[itemPage].GetComponent<Image>().preserveAspect = true;
                     }
                 }

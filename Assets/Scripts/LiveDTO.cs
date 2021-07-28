@@ -1,4 +1,6 @@
 using System;
+using UnityEngine;
+
 public class LiveDTO
 {
     public int LiveId {get; set;}
@@ -6,5 +8,5 @@ public class LiveDTO
     public string Link {get; set;}
     public DateTime LiveDate {get; set;}
     public string CoverImage {get; set;}
-        
+    public Sprite Sprite {get; set;}
 }

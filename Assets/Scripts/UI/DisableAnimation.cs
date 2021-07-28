@@ -10,6 +10,7 @@ public class DisableAnimation : MonoBehaviour
         {
             AccountManager.instance.InitializeUserAutoLogin();
             UIHandler.instance.HomeScreen();
+            UIHandler.instance.DockBarVisibility(true);
         }
         else
             UIHandler.instance.MethodLoginScreen();

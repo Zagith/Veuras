@@ -19,6 +19,7 @@ public class UIHandler : MonoBehaviour
     public GameObject homeUI;
     public GameObject loginmethodUI;
     public GameObject openingUI;
+    public GameObject dockBarUI;
 
 
     [Header("Modals")]
@@ -76,18 +77,6 @@ public class UIHandler : MonoBehaviour
             backButtonStart.gameObject.SetActive(false);
         }
 
-        public void LiveScreen(GameObject live)
-        {
-            live.SetActive(true);
-            homeUI.SetActive(false);
-        }
-
-        public void CLoseLive(GameObject live)
-        {
-            live.SetActive(false);
-            homeUI.SetActive(true);
-        }
-
     #endregion
 
     #region Change pages functions
@@ -103,6 +92,23 @@ public class UIHandler : MonoBehaviour
             loginmethodUI.SetActive(true);
             homeUI.SetActive(false);
             openingUI.SetActive(false);
+        }
+
+        public void DockBarVisibility(bool visible = false)
+        {
+            dockBarUI.SetActive(visible);
+        }
+
+        public void LiveScreen(GameObject live)
+        {
+            live.SetActive(true);
+            homeUI.SetActive(false);
+        }
+
+        public void CLoseLive(GameObject live)
+        {
+            live.SetActive(false);
+            homeUI.SetActive(true);
         }
 
     #endregion
