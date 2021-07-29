@@ -27,6 +27,8 @@ public class UIHandler : MonoBehaviour
     public ModalWindowManager settingsErrorModal;
     public ModalWindowManager settingsInfoModal;
 
+    private GameObject lasLiveOpened;
+
     private void Awake()
     {
         if (instance == null)
@@ -102,6 +104,12 @@ public class UIHandler : MonoBehaviour
 
         public void LiveScreen(GameObject live)
         {
+            if (lasLiveOpened != null)
+            {
+                lasLiveOpened.SetActive(false);
+                lasLiveOpened = null;
+            }
+            lasLiveOpened = live;
             live.SetActive(true);
             homeUI.SetActive(false);
         }

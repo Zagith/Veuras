@@ -20,8 +20,8 @@ public class DockManager : MonoBehaviour
 
     public void UpdateDockBar()
     {
-        List<LiveDTO> lives = LiveManager.instance.liveList.Where(s => s.LiveDate >= System.DateTime.Now && 
-            s.LiveDate <= System.DateTime.Now.AddHours(1)).OrderBy(s => s.LiveDate).ToList();
+        List<LiveDTO> lives = LiveManager.instance.liveList.Where(s => s.LiveDate <= System.DateTime.Now && 
+            s.LiveDate.AddHours(1) >= System.DateTime.Now).OrderBy(s => s.LiveDate).ToList();
 
         if (lives.Any())
         {
@@ -33,6 +33,8 @@ public class DockManager : MonoBehaviour
                     GameObject liveGB = Instantiate(dockElement[i]);
                     liveGB.transform.SetParent(dockBar.transform, false);
                     liveGB.transform.GetChild(0).GetComponent<Image>().sprite = live.Sprite;
+                    liveGB.GetComponent<Button>().onClick.AddListener(delegate { UIHandler.instance.LiveScreen(
+                        LiveManager.instance.liveListGB.Where(n => n.name == $"live {live.Name}").FirstOrDefault());});
                     i++;
                 }
             }
