@@ -103,6 +103,11 @@ public class UIHandler : MonoBehaviour
             dockBarUI.SetActive(visible);
         }
 
+        public void DockBarChat()
+        {
+            dockBarUI.SetActive(dockBarUI.activeSelf ? false : true);
+        }
+
         public void LiveScreen(GameObject live)
         {
             if (lasLiveOpened != null)
