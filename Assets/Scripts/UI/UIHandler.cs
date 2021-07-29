@@ -89,6 +89,7 @@ public class UIHandler : MonoBehaviour
             homeUI.SetActive(true);
             loginmethodUI.SetActive(false);
             openingUI.SetActive(false);
+            UIHandler.instance.DockBarVisibility(true);
         }
         public void MethodLoginScreen()
         {
@@ -110,8 +111,10 @@ public class UIHandler : MonoBehaviour
                 lasLiveOpened = null;
             }
             lasLiveOpened = live;
+            NamePickGui.instance.StartChat(live);
             live.SetActive(true);
             homeUI.SetActive(false);
+            UIHandler.instance.DockBarVisibility();
         }
 
         public void CLoseLive(GameObject live)
