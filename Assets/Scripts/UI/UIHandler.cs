@@ -20,6 +20,7 @@ public class UIHandler : MonoBehaviour
     public GameObject loginmethodUI;
     public GameObject openingUI;
     public GameObject dockBarUI;
+    public GameObject transitionDrag;
 
 
     [Header("Modals")]
@@ -109,6 +110,11 @@ public class UIHandler : MonoBehaviour
         {
             live.SetActive(false);
             homeUI.SetActive(true);
+        }
+
+        public void ShowTransitionDrag()
+        {
+            transitionDrag.SetActive(true);
         }
 
     #endregion

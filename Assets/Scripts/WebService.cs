@@ -114,7 +114,8 @@ public class WebService : MonoBehaviour
                         byte[] bytes = wwww.downloadHandler.data;
                         Texture2D texture = new Texture2D(2,2);
                         texture.LoadImage(bytes);
-                        Sprite sprite = Sprite.Create(texture, new Rect(0,0, texture.width, texture.height), new Vector2(.5f,.5f));    
+                        Sprite sprite = Sprite.Create(texture, new Rect(0,0, texture.width, texture.height), new Vector2(.5f,.5f));   
+                        
                         liveListUI.liveImage[itemPage].GetComponent<Image>().sprite = sprite;
                         liveList[i].Sprite = sprite;
                         liveListUI.liveImage[itemPage].GetComponent<Image>().preserveAspect = true;
@@ -125,7 +126,7 @@ public class WebService : MonoBehaviour
 
             }
 
-            if (singlePageCount == 2 && i < liveList.Count)
+            if (singlePageCount == 1)
             {
                 singlePageCount = 0;
                 itemPage = 0;
@@ -134,18 +135,21 @@ public class WebService : MonoBehaviour
             {
                 itemPage++;
                 singlePageCount++;
+                Debug.Log($"aaaa {singlePageCount}"); 
             }
         }
-        if (itemPage != 3)
+        if (itemPage != 2)
         {
             switch (itemPage)
             {
                 case 1:
                     Destroy(liveListUI.livesList[1]);
-                    categoryAttributes.blurGB.SetActive(false);
+                    // categoryAttributes.blurGB.SetActive(false);
                 break;
             }
         }
-        categoryAttributes.scrollSnapRect.InitializeScroll();
+        categoryAttributes.scrollSnapRect.InitializeScroll(container: categoryAttributes.viewPort.GetComponent<RectTransform>());
+        CategoryManager.instance.InitializeHeaderLive();
+        DockManager.instance.UpdateDockBar();
     }
 }

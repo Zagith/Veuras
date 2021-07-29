@@ -99,14 +99,26 @@ public class ScrollSnapRect : MonoBehaviour, IBeginDragHandler, IEndDragHandler,
         }
     }
 
-    public void InitializeScroll(int pageCount = 0)
+    public void InitializeScroll(int pageCount = 0, RectTransform container = null)
     {
+        if (_container == null && container != null)
+        {
+            _container = container;
+        }
+        if (_scrollRectComponent == null && container != null)
+        {
+            _scrollRectComponent = container.parent.GetComponent<ScrollRect>();
+        }
+        if (_scrollRectRect == null && container != null)
+        {
+            _scrollRectRect = container.parent.GetComponent<RectTransform>();
+        }
+        Debug.Log($"page count {_pageCount} child count {_container}");
         if (pageCount != 0)
             _pageCount = pageCount;
         else
             _pageCount = _container.childCount;
 
-        Debug.Log($"page count {_pageCount} child count {_container}");
         // is it horizontal or vertical scrollrect
         if (_scrollRectComponent.horizontal && !_scrollRectComponent.vertical) {
             _horizontal = true;

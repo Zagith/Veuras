@@ -53,6 +53,7 @@ public class LiveManager : MonoBehaviour
             LiveDTO live = new LiveDTO {
                 LiveId = list[i].AsObject["LiveId"],
                 Name = list[i].AsObject["Nome"],
+                Description = list[i].AsObject["Descrizione"],
                 Link = list[i].AsObject["Link"],
                 LiveDate = DateTime.ParseExact(list[i].AsObject["Inizio"], "yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture),
                 CoverImage = list[i].AsObject["Copertina"]

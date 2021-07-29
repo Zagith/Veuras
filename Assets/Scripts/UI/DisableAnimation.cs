@@ -6,6 +6,7 @@ public class DisableAnimation : MonoBehaviour
 {
     public void ChangePage()
     {
+        UIHandler.instance.ShowTransitionDrag();
         if (PlayerPrefs.GetString("Email") != "")
         {
             AccountManager.instance.InitializeUserAutoLogin();
