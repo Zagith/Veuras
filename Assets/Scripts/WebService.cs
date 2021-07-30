@@ -151,5 +151,6 @@ public class WebService : MonoBehaviour
         categoryAttributes.scrollSnapRect.InitializeScroll(container: categoryAttributes.viewPort.GetComponent<RectTransform>());
         CategoryManager.instance.InitializeHeaderLive();
         DockManager.instance.UpdateDockBar();
+        DisableAnimation.instance.ChangePage();
     }
 }

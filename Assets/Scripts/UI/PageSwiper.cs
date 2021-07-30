@@ -35,7 +35,7 @@ public class PageSwiper : MonoBehaviour, IDragHandler, IEndDragHandler{
     }
     IEnumerator SmoothMove(Vector3 startpos, Vector3 endpos, float seconds){
         float t = 0f;
-        endpos = new Vector3(endpos.x,2500,endpos.z);
+        endpos = new Vector3(endpos.x,3500,endpos.z);
         while(t <= 1.0){
             t += Time.deltaTime / seconds;
             transform.position = Vector3.Lerp(startpos, endpos, Mathf.SmoothStep(0f, 1f, t));

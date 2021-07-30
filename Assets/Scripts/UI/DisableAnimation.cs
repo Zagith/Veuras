@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class DisableAnimation : MonoBehaviour
 {
+    public static DisableAnimation instance;
+
+    void Awake()
+    {
+        instance = this;
+    }
     public void ChangePage()
     {
         UIHandler.instance.ShowTransitionDrag();
