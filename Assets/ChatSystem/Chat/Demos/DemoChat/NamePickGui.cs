@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof (ChatGui))]
@@ -40,11 +41,12 @@ public class NamePickGui : MonoBehaviour
     public void StartChat(GameObject live)
     {
         ChatGui chatNewComponent = FindObjectOfType<ChatGui>();
-        ChatGui.instance.ChatPanel.transform.SetParent(live.transform.GetChild(1).transform, false);
+        // ChatGui.instance.ChatPanel.transform.SetParent(live.transform.GetChild(1).transform, false);
         if (!string.IsNullOrEmpty(idInput))
             chatNewComponent.UserName = idInput;
         else
             chatNewComponent.UserName = $"{AccountManager.instance.Name} {AccountManager.instance.Surname}";
+        chatNewComponent.channelIndex = Array.IndexOf(chatNewComponent.ChannelsToJoinOnConnect, live.name.Replace("live_", ""));
 		chatNewComponent.Connect();
         enabled = false;
 

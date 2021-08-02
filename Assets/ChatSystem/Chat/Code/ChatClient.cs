@@ -42,7 +42,7 @@ namespace Photon.Chat
         const int FriendRequestListMax = 1024;
 
         /// <summary> Default maximum value possible for <see cref="ChatChannel.MaxSubscribers"/> when <see cref="ChatChannel.PublishSubscribers"/> is enabled</summary>
-        public const int DefaultMaxSubscribers = 100;
+        public const int DefaultMaxSubscribers = 10000;
 
         /// <summary>The address of last connected Name Server.</summary>
         public string NameServerAddress { get; private set; }

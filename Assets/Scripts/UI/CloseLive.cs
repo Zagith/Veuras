@@ -7,5 +7,6 @@ public class CloseLive : MonoBehaviour
     public void CloseLiveEvent()
     {
         UIHandler.instance.CLoseLive(this.gameObject);
+        ChatGui.instance.Disconnect();
     }
 }

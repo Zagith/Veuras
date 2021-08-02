@@ -34,7 +34,7 @@ public class DockManager : MonoBehaviour
                     liveGB.transform.SetParent(dockBar.transform, false);
                     liveGB.transform.GetChild(0).GetComponent<Image>().sprite = live.Sprite;
                     liveGB.GetComponent<Button>().onClick.AddListener(delegate { UIHandler.instance.LiveScreen(
-                        LiveManager.instance.liveListGB.Where(n => n.name == $"live {live.Name}").FirstOrDefault());});
+                        LiveManager.instance.liveListGB.Where(n => n.name == $"live_{live.Name}").FirstOrDefault());});
                     i++;
                 }
             }

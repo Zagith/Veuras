@@ -20,6 +20,8 @@ public class LiveManager : MonoBehaviour
 
     public List<GameObject> liveListGB = new List<GameObject>();
 
+    private List<string> channelInitialize = new List<string>();
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -72,15 +74,17 @@ public class LiveManager : MonoBehaviour
 
             UniWebView stream = liveList1.transform.GetChild(0).GetComponent<UniWebView>();
             stream.urlOnStart = $"{link}?link={live.Link}";
-            liveList1.name = $"live {live.Name}";
+            liveList1.name = $"live_{live.Name}";
             liveListGB.Add(liveList1.gameObject);
             liveList1.SetActive(false);
+            channelInitialize.Add(live.Name);
         }
+        ChatGui.instance.InitializeChannels(channelInitialize);
         CategoryManager.instance.InitializeCategory();
     }
 
     public void GoToLive(string name)
     {
-        UIHandler.instance.LiveScreen(liveListGB.Where(n => n.name == $"live {name}").FirstOrDefault());
+        UIHandler.instance.LiveScreen(liveListGB.Where(n => n.name == $"live_{name}").FirstOrDefault());
     }
 }

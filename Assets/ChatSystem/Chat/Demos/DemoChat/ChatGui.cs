@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -39,6 +40,8 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 	public static ChatGui instance;
 
 	public string[] ChannelsToJoinOnConnect; // set in inspector. Demo channels to join automatically.
+
+	public int channelIndex;
 
 	public string[] FriendsList;
 
@@ -154,6 +157,11 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 		}
 	}
 
+	public void InitializeChannels(List<string> channelInitialize)
+	{
+		ChannelsToJoinOnConnect = channelInitialize.ToArray();
+		Debug.Log(ChannelsToJoinOnConnect[0]);
+	}
 	public void Connect()
 	{
 		// this.UserIdFormPanel.gameObject.SetActive(false);
@@ -169,6 +177,12 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 		Debug.Log("Connecting as: " + this.UserName);
 
 	    // this.ConnectingLabel.SetActive(true);
+	}
+
+	public void Disconnect()
+	{
+		this.chatClient.Disconnect();
+		this.ChatPanel.gameObject.SetActive(false);
 	}
 
     /// <summary>To avoid that the Editor becomes unresponsive, disconnect all Photon connections in OnDestroy.</summary>
@@ -376,7 +390,7 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 	{
 		if (this.ChannelsToJoinOnConnect != null && this.ChannelsToJoinOnConnect.Length > 0)
 		{
-			this.chatClient.Subscribe(this.ChannelsToJoinOnConnect, this.HistoryLengthToFetch);
+			this.chatClient.Subscribe(this.ChannelsToJoinOnConnect[channelIndex], this.HistoryLengthToFetch);
 		}
 
 	    // this.ConnectingLabel.SetActive(false);
@@ -428,6 +442,7 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 		// in this demo, we simply send a message into each channel. This is NOT a must have!
 		foreach (string channel in channels)
 		{
+			Debug.Log($"Channels {channel}");
 			this.chatClient.PublishMessage(channel, "says 'hi'."); // you don't HAVE to send a msg on join but you could.
 
 			if (this.ChannelToggleToInstantiate != null)

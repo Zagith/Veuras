@@ -48,6 +48,6 @@ public class CategoryManager : MonoBehaviour
         headerDescription.text = lives[rnd].Description;
         headerImage.sprite = lives[rnd].Sprite;
         headerTitle.gameObject.GetComponent<Button>().onClick.AddListener(delegate { UIHandler.instance.LiveScreen(
-            LiveManager.instance.liveListGB.Where(n => n.name == $"live {headerTitle.text}").FirstOrDefault());});
+            LiveManager.instance.liveListGB.Where(n => n.name == $"live_{headerTitle.text}").FirstOrDefault());});
     }
 }
