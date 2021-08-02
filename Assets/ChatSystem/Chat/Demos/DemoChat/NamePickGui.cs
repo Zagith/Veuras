@@ -42,6 +42,7 @@ public class NamePickGui : MonoBehaviour
         ChatGui chatNewComponent = FindObjectOfType<ChatGui>();
         ChatGui.instance.ChatPanel.transform.SetParent(live.transform.GetChild(1).transform, false);
         chatNewComponent.UserName = AccountManager.instance.Name;
+        Debug.Log($"chat name {AccountManager.instance.Name}");
 		chatNewComponent.Connect();
         enabled = false;
 
