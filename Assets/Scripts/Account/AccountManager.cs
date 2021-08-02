@@ -37,6 +37,12 @@ public class AccountManager : MonoBehaviour
         }
     }
 
+    public bool CanAutoLogin()
+    {
+        return !string.IsNullOrEmpty(PlayerPrefs.GetString("Email")) && !string.IsNullOrEmpty(PlayerPrefs.GetString("Password")) && 
+            !string.IsNullOrEmpty(PlayerPrefs.GetString("Name")) && !string.IsNullOrEmpty(PlayerPrefs.GetString("Surname"));
+    }
+
     // Start is called before the first frame update
     void Awake()
     {

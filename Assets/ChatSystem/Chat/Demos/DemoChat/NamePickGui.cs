@@ -9,7 +9,7 @@ public class NamePickGui : MonoBehaviour
 
     public ChatGui chatNewComponent;
 
-    public InputField idInput;
+    private string idInput;
 
     void Awake()
     {
@@ -20,10 +20,10 @@ public class NamePickGui : MonoBehaviour
         this.chatNewComponent = FindObjectOfType<ChatGui>();
 
 
-        string prefsName = PlayerPrefs.GetString(NamePickGui.UserNamePlayerPref);
+        string prefsName = $"{PlayerPrefs.GetString("Name")} {PlayerPrefs.GetString("Surname")}";
         if (!string.IsNullOrEmpty(prefsName))
         {
-            this.idInput.text = prefsName;
+            this.idInput = prefsName;
         }
     }
 
@@ -41,8 +41,10 @@ public class NamePickGui : MonoBehaviour
     {
         ChatGui chatNewComponent = FindObjectOfType<ChatGui>();
         ChatGui.instance.ChatPanel.transform.SetParent(live.transform.GetChild(1).transform, false);
-        chatNewComponent.UserName = AccountManager.instance.Name;
-        Debug.Log($"chat name {AccountManager.instance.Name}");
+        if (!string.IsNullOrEmpty(idInput))
+            chatNewComponent.UserName = idInput;
+        else
+            chatNewComponent.UserName = $"{AccountManager.instance.Name} {AccountManager.instance.Surname}";
 		chatNewComponent.Connect();
         enabled = false;
 
