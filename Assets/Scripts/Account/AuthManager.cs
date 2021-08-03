@@ -124,7 +124,7 @@ public class AuthManager : MonoBehaviour
             else
             {
                 Debug.Log($"[ERROR] {message}");
-                // UIHandler.instance.ShowModalSettings(message, true);
+                UIHandler.instance.ShowModalSettings(message, true);
             }
             Debug.Log("[Login] " + message);
         }
