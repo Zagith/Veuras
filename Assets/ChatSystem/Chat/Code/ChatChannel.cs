@@ -7,6 +7,7 @@
 #if UNITY_4_7 || UNITY_5 || UNITY_5_3_OR_NEWER
 #define SUPPORTED_UNITY
 #endif
+using UnityEngine;
 
 namespace Photon.Chat
 {
@@ -28,7 +29,7 @@ namespace Photon.Chat
     ///     ChatClient.PublicChannels
     ///     ChatClient.PrivateChannels
     /// </remarks>
-    public class ChatChannel
+    public class ChatChannel : MonoBehaviour
     {
         /// <summary>Name of the channel (used to subscribe and unsubscribe).</summary>
         public readonly string Name;
@@ -38,6 +39,8 @@ namespace Photon.Chat
 
         /// <summary>Messages in chronological order. Senders and Messages refer to each other by index. Senders[x] is the sender of Messages[x].</summary>
         public readonly List<object> Messages = new List<object>();
+
+        public readonly List<ChatType> MessageType = new List<ChatType>();
 
         /// <summary>If greater than 0, this channel will limit the number of messages, that it caches locally.</summary>
         public int MessageLimit;
@@ -75,6 +78,7 @@ namespace Photon.Chat
         {
             this.Senders.Add(sender);
             this.Messages.Add(message);
+            // this.MessageType.Add(type);
             this.LastMsgId = msgId;
             this.TruncateMessages();
         }
@@ -84,6 +88,7 @@ namespace Photon.Chat
         {
             this.Senders.AddRange(senders);
             this.Messages.AddRange(messages);
+            // this.MessageType.AddRange(type);
             this.LastMsgId = lastMsgId;
             this.TruncateMessages();
         }
@@ -99,6 +104,7 @@ namespace Photon.Chat
             int excessCount = this.Messages.Count - this.MessageLimit;
             this.Senders.RemoveRange(0, excessCount);
             this.Messages.RemoveRange(0, excessCount);
+            this.MessageType.RemoveRange(0, excessCount);
         }
 
         /// <summary>Clear the local cache of messages currently stored. This frees memory but doesn't affect the server.</summary>
@@ -106,6 +112,7 @@ namespace Photon.Chat
         {
             this.Senders.Clear();
             this.Messages.Clear();
+            this.MessageType.Clear();
         }
 
         /// <summary>Provides a string-representation of all messages in this channel.</summary>
@@ -118,6 +125,29 @@ namespace Photon.Chat
                 txt.AppendLine(string.Format("{0}: {1}", this.Senders[i], this.Messages[i]));
             }
             return txt.ToString();
+        }
+
+        public void ToStringMessages(GameObject messagePrefab)
+        {
+            MessageAttributes messageAttributes;
+            StringBuilder txt = new StringBuilder();
+            if (this.Messages.Count > 1)
+        {
+            for (int p = 0; p < this.Messages.Count - 1; p++)
+            {
+                Destroy(ChatGui.instance.CurrentChannelText.gameObject.transform.GetChild(p).gameObject);
+            }
+        }
+            for (int i = 0; i < this.Messages.Count; i++)
+            {
+                GameObject messageGB = Instantiate(messagePrefab);
+                messageGB.transform.SetParent(ChatGui.instance.CurrentChannelText.gameObject.transform, false);
+
+                messageAttributes = messageGB.GetComponent<MessageAttributes>();
+                messageAttributes.messageText.text = this.Messages[i].ToString();
+                // txt.AppendLine(string.Format("{0}: {1}", this.Senders[i], this.Messages[i]));
+            }
+            // return txt.ToString();
         }
 
         internal void ReadProperties(Dictionary<object, object> newProperties)

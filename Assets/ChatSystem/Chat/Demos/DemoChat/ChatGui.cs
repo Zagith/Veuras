@@ -65,6 +65,7 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 	public RectTransform ChatPanel;     // set in inspector (to enable/disable panel)
 	// public GameObject UserIdFormPanel;
 	public InputField InputFieldChat;   // set in inspector
+	public GameObject MessagePrefab;
 	public Text CurrentChannelText;     // set in inspector
 	public Toggle ChannelToggleToInstantiate; // set in inspector
 
@@ -442,9 +443,6 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 		// in this demo, we simply send a message into each channel. This is NOT a must have!
 		foreach (string channel in channels)
 		{
-			Debug.Log($"Channels {channel}");
-			this.chatClient.PublishMessage(channel, "says 'hi'."); // you don't HAVE to send a msg on join but you could.
-
 			if (this.ChannelToggleToInstantiate != null)
 			{
 				this.InstantiateChannelButton(channel);
@@ -629,7 +627,8 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 		}
 
 		this.selectedChannelName = channelName;
-		this.CurrentChannelText.text = channel.ToStringMessages();
+		// this.CurrentChannelText.text = 
+		channel.ToStringMessages(MessagePrefab);
 		Debug.Log("ShowChannel: " + this.selectedChannelName);
 
 		foreach (KeyValuePair<string, Toggle> pair in this.channelToggles)

@@ -1060,6 +1060,7 @@ namespace Photon.Chat
 
             object message = (object)eventData.Parameters[(byte)ChatParameterCode.Message];
             string sender = (string)eventData.Parameters[(byte)ChatParameterCode.Sender];
+            // ChatType type = (ChatType)eventData.Parameters[(byte)ChatParameterCode.MessageType];
             int msgId = (int)eventData.Parameters[ChatParameterCode.MsgId];
 
             string channelName;
@@ -1091,6 +1092,7 @@ namespace Photon.Chat
             object[] messages = (object[])eventData.Parameters[(byte)ChatParameterCode.Messages];
             string[] senders = (string[])eventData.Parameters[(byte)ChatParameterCode.Senders];
             string channelName = (string)eventData.Parameters[(byte)ChatParameterCode.Channel];
+            // ChatType[] type = (ChatType[])eventData.Parameters[(byte)ChatParameterCode.MsgId];
             int lastMsgId = (int)eventData.Parameters[ChatParameterCode.MsgId];
 
             ChatChannel channel;
