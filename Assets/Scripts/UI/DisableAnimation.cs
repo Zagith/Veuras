@@ -12,7 +12,6 @@ public class DisableAnimation : MonoBehaviour
     }
     public void ChangePage()
     {
-        UIHandler.instance.ShowTransitionDrag();
         if (AccountManager.instance.CanAutoLogin())
         {
             AccountManager.instance.InitializeUserAutoLogin();

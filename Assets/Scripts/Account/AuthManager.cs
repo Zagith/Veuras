@@ -171,6 +171,7 @@ public class AuthManager : MonoBehaviour
             }
             ClearInputs();
             StartCoroutine(Login(_email, _password));
+            UIHandler.instance.ShowTransitionDrag();
         }
     }
 }
