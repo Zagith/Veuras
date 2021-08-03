@@ -46,6 +46,7 @@ public class WebService : MonoBehaviour
         }
     }
 
+    // Get all lives
     public void GetLives()
     {
         StartCoroutine(getLives());
@@ -66,6 +67,7 @@ public class WebService : MonoBehaviour
         }
     }
 
+    // Get live category
     public void GetLiveCategory()
     {
         StartCoroutine(getLiveCategory());
@@ -76,7 +78,7 @@ public class WebService : MonoBehaviour
         int pageCount = 1;
         int singlePageCount = 0;
         int itemPage = 0;
-        CategoryAttributes categoryAttributes = CategoryManager.instance.categoryParent.transform.GetChild(0).GetComponent<CategoryAttributes>();
+        CategoryAttributes categoryAttributes = CategoryManager.instance.categoryParent.transform.GetChild(1).GetComponent<CategoryAttributes>();
         GameObject livePrefab = null;
         GameObject listGB = categoryAttributes.viewPort;
         List<LiveDTO> liveList = LiveManager.instance.liveList;
@@ -148,9 +150,55 @@ public class WebService : MonoBehaviour
                 break;
             }
         }
+        GetWatchedLives();
         categoryAttributes.scrollSnapRect.InitializeScroll(container: categoryAttributes.viewPort.GetComponent<RectTransform>());
         CategoryManager.instance.InitializeHeaderLive();
         DockManager.instance.UpdateDockBar();
         DisableAnimation.instance.ChangePage();
+    }
+
+    // Get whatched lives
+    public void GetWatchedLives()
+    {
+        StartCoroutine(getWatchedLives());
+    }
+    private IEnumerator getWatchedLives()
+    {
+        Debug.Log(AccountManager.instance.UserToken);
+        using (UnityWebRequest w = UnityWebRequest.Get($"{WebService.instance.WebHost}getliveinstance.php?uid={AccountManager.instance.UserToken}"))
+        {
+            yield return w.SendWebRequest();
+            if (w.isNetworkError || w.isHttpError)
+            {
+                Debug.LogError(w.error);
+            }
+            
+            string results = w.downloadHandler.text;
+            Debug.Log($"STATUS {results}");
+            JSONArray jsonArray = JSON.Parse(Regex.Replace(results, @"\s+", " ")) as JSONArray;
+
+            LiveManager.instance.UpdateLiveinstanceList(jsonArray);
+        }
+    }
+
+    // Add whatched live
+    public void AddLiveInstance(int liveId)
+    {
+        StartCoroutine(addLiveInstance(liveId));
+    }
+    private IEnumerator addLiveInstance(int liveId)
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("LiveId", liveId);
+        form.AddField("UserId", AccountManager.instance.UserToken);
+            
+        using (UnityWebRequest w = UnityWebRequest.Post($"{WebService.instance.WebHost}addliveinstance.php", form))
+        {
+            yield return w.SendWebRequest();
+            if (w.isNetworkError || w.isHttpError)
+            {
+                Debug.LogError(w.error);
+            }
+        }
     }
 }

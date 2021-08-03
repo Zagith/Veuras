@@ -117,8 +117,8 @@ public class AuthManager : MonoBehaviour
                 string results = w.downloadHandler.text;
                 Debug.Log(results);
                 JSONArray jsonArray = JSON.Parse(Regex.Replace(results, @"\s+", "")) as JSONArray;
-                AccountManager.instance.InitializeUser(_email, jsonArray[0].AsObject["Nome"], jsonArray[0].AsObject["Cognome"]);
-                AccountManager.instance.SetAutoLogin(_email, _password, jsonArray[0].AsObject["Nome"], jsonArray[0].AsObject["Cognome"]);
+                AccountManager.instance.InitializeUser(_email, jsonArray[0].AsObject["Nome"], jsonArray[0].AsObject["Cognome"], jsonArray[0].AsObject["UserId"]);
+                AccountManager.instance.SetAutoLogin(_email, _password, jsonArray[0].AsObject["Nome"], jsonArray[0].AsObject["Cognome"], jsonArray[0].AsObject["UserId"]);
                 UIHandler.instance.HomeScreen();
             }
             else

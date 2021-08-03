@@ -14,7 +14,6 @@ public class DisableAnimation : MonoBehaviour
     {
         if (AccountManager.instance.CanAutoLogin())
         {
-            AccountManager.instance.InitializeUserAutoLogin();
             UIHandler.instance.HomeScreen();
         }
         else

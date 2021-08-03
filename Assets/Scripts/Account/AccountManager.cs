@@ -7,12 +7,12 @@ public class AccountManager : MonoBehaviour
     public static AccountManager instance;
 
     // User data
-    private string _userToken;
+    private int _userToken;
     private string _name;
     private string _surname;
     private string _email;
     
-    public string UserToken
+    public int UserToken
     {
         get {
             return _userToken;
@@ -40,7 +40,8 @@ public class AccountManager : MonoBehaviour
     public bool CanAutoLogin()
     {
         return !string.IsNullOrEmpty(PlayerPrefs.GetString("Email")) && !string.IsNullOrEmpty(PlayerPrefs.GetString("Password")) && 
-            !string.IsNullOrEmpty(PlayerPrefs.GetString("Name")) && !string.IsNullOrEmpty(PlayerPrefs.GetString("Surname"));
+            !string.IsNullOrEmpty(PlayerPrefs.GetString("Name")) && !string.IsNullOrEmpty(PlayerPrefs.GetString("Surname")) && 
+                PlayerPrefs.GetInt("UserId") > 0;
     }
 
     // Start is called before the first frame update
@@ -49,6 +50,13 @@ public class AccountManager : MonoBehaviour
         Instantiate();
     }
 
+    void Start()
+    {
+        if (AccountManager.instance.CanAutoLogin())
+        {
+            AccountManager.instance.InitializeUserAutoLogin();
+        }
+    }
     void Instantiate()
     {
         DontDestroyOnLoad(gameObject);
@@ -64,19 +72,21 @@ public class AccountManager : MonoBehaviour
         }
     }
 
-    public void InitializeUser(string email, string name, string surname)
+    public void InitializeUser(string email, string name, string surname, int userId)
     {
         _name = name;
         _surname = surname;
         _email = email;
+        _userToken = userId;
     }
 
-    public void SetAutoLogin(string email, string password, string name, string surname)
+    public void SetAutoLogin(string email, string password, string name, string surname, int userId)
     {
         PlayerPrefs.SetString("Email", email);
         PlayerPrefs.SetString("Password", password);
         PlayerPrefs.SetString("Name", name);
         PlayerPrefs.SetString("Surname", surname);
+        PlayerPrefs.SetInt("UserId", userId);
     }
 
     public void InitializeUserAutoLogin()
@@ -84,5 +94,6 @@ public class AccountManager : MonoBehaviour
         _name = PlayerPrefs.GetString("Name");
         _surname = PlayerPrefs.GetString("Surname");
         _email = PlayerPrefs.GetString("Email");
+        _userToken = PlayerPrefs.GetInt("UserId");
     }
 }

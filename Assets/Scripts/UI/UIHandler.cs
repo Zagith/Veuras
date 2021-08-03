@@ -46,7 +46,6 @@ public class UIHandler : MonoBehaviour
     {
         homeUI.SetActive(false);
         loginmethodUI.SetActive(false);
-        settingsInfoModal.OpenWindow();
     }
 
     #region Page components change function

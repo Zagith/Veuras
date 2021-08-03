@@ -11,6 +11,8 @@ public class LiveManager : MonoBehaviour
 
     public List<LiveDTO> liveList = new List<LiveDTO>();
 
+    public List<LiveInstanceDTO> LiveInstance = new List<LiveInstanceDTO>();
+
     [Header("Instantiate Lives")]
     [SerializeField] GameObject livePrefab;
     [SerializeField] Transform listGB;
@@ -86,5 +88,36 @@ public class LiveManager : MonoBehaviour
     public void GoToLive(string name)
     {
         UIHandler.instance.LiveScreen(liveListGB.Where(n => n.name == $"live_{name}").FirstOrDefault());
+        int liveId = LiveManager.instance.liveList.Where(s => s.Name == name).Select(n => n.LiveId).FirstOrDefault();
+        if (!LiveManager.instance.LiveInstance.Where(s => s.LiveId == liveId).Any())
+        {
+            UpdateLiveinstanceList(liveId);
+        }
     }
+
+    public void UpdateLiveinstanceList(JSONArray list)
+    {
+        for (int i = 0; i < list.Count; i++)
+        {
+            LiveInstanceDTO liveinstance = new LiveInstanceDTO {
+                LiveId = list[i].AsObject["LiveId"],
+                UserId = list[i].AsObject["AccountId"]
+            };
+            LiveInstance.Add(liveinstance);
+        }
+        CategoryManager.instance.UpdateContinueToWatch();
+    }
+
+    public void UpdateLiveinstanceList(int liveId)
+    {
+        LiveInstanceDTO liveinstance = new LiveInstanceDTO {
+            LiveId = liveId,
+            UserId = AccountManager.instance.UserToken
+        };
+        LiveInstance.Add(liveinstance);
+        CategoryManager.instance.UpdateContinueToWatch();
+        WebService.instance.AddLiveInstance(liveId);
+    }
+
+
 }
