@@ -132,23 +132,26 @@ public class AuthManager : MonoBehaviour
 
     private IEnumerator Register(string _email, string _password, string _name, string _surname)
     {
+        ClearInputs();
         if (_name == "")
         {
-            ClearInputs();
             //If the username field is blank show a warning
             UIHandler.instance.ShowModalSettings("Nome obbligatorio", true);
             Debug.Log("[Registration] Missing Username");
         }
         else if (_surname == "")
         {
-            ClearInputs();
             //If the username field is blank show a warning
             UIHandler.instance.ShowModalSettings("Cognome obbligatorio", true);
             Debug.Log("[Registration] Missing Username");
         }
+        else if (passwordLoginField.text.Length < 5)
+        {
+            UIHandler.instance.ShowModalSettings("La password è troppo corta, minimo 5 caratteri", true);
+            Debug.Log("[Registration] Password Does Not Match!");
+        }
         else if(passwordRegisterField.text != passwordRegisterVerifyField.text)
         {
-            ClearInputs();
             //If the password does not match show a warning
             UIHandler.instance.ShowModalSettings("La password non corrisponde", true);
             Debug.Log("[Registration] Password Does Not Match!");
@@ -168,10 +171,19 @@ public class AuthManager : MonoBehaviour
                 {
                     Debug.LogError(w.error);
                 }
+                string result = w.downloadHandler.text;
+
+                if (result == "errore")
+                {
+                    UIHandler.instance.ShowModalSettings("Email esistente", true);
+                    Debug.Log("[Registration] Missing Username");
+                }
+                else
+                {        
+                    StartCoroutine(Login(_email, _password));
+                    UIHandler.instance.ShowTransitionDrag();
+                }
             }
-            ClearInputs();
-            StartCoroutine(Login(_email, _password));
-            UIHandler.instance.ShowTransitionDrag();
         }
     }
 }
