@@ -133,6 +133,7 @@ public class UIHandler : MonoBehaviour
         {
             live.SetActive(false);
             homeUI.SetActive(true);
+            UIHandler.instance.DockBarVisibility(true);
         }
 
         public void ShowTransitionDrag()
