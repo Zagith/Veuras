@@ -105,7 +105,14 @@ public class UIHandler : MonoBehaviour
 
         public void DockBarChat()
         {
-            dockBarUI.SetActive(dockBarUI.activeSelf ? false : true);
+            if (dockBarUI.activeSelf)
+            {
+                dockBarUI.GetComponent<Animator>().Play("Dockbar_close");
+            }
+            else
+            {
+                dockBarUI.SetActive(true);
+            }
         }
 
         public void LiveScreen(GameObject live)
