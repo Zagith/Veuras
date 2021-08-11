@@ -41,6 +41,19 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 {
 	public static ChatGui instance;
 
+	[SerializeField] GameObject chatWriteGB;
+	[SerializeField] GameObject chatWriteButtonGB;
+
+	[Header("Pulsanti Chat")]
+	public GameObject domandaButton;
+	public GameObject rispondiButton;
+	public GameObject domandaGuidaButton;
+
+	public bool isQuestion;
+	public bool isGuideQuestion;
+	public bool isAnswer;
+
+	[Header("Impostazioni Chat")]
 	public string[] ChannelsToJoinOnConnect; // set in inspector. Demo channels to join automatically.
 
 	public int channelIndex;
@@ -68,6 +81,7 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 	// public GameObject UserIdFormPanel;
 	public TMP_InputField InputFieldChat;   // set in inspector
 	public GameObject MessagePrefab;
+	public GameObject AnswerMessagePrefab;
 	public Text CurrentChannelText;     // set in inspector
 	public Toggle ChannelToggleToInstantiate; // set in inspector
 
@@ -82,6 +96,8 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 	public GameObject Title;
 	// public Text StateText; // set in inspector
 	public Text UserIdText; // set in inspector
+
+	public List<ChatType> MessagesType = new List<ChatType>();
 
 	// private static string WelcomeText = "Welcome to chat. Type \\help to list commands.";
 	private static string HelpText = "\n    -- HELP --\n" +
@@ -228,7 +244,13 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 	{
 		if (Input.GetKey(KeyCode.Return) || Input.GetKey(KeyCode.KeypadEnter))
 		{
-		    this.SendChatMessage(this.InputFieldChat.text);
+			ChatType type = ChatType.Normal;
+			if (isQuestion)
+			{
+				type = ChatType.Domanda;
+				isQuestion = false;
+			}
+		    this.SendChatMessage(this.InputFieldChat.text, type);
 			this.InputFieldChat.text = "";
 		}
 	}
@@ -237,7 +259,13 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 	{
 		if (this.InputFieldChat != null)
 		{
-		    this.SendChatMessage(this.InputFieldChat.text);
+			ChatType type = ChatType.Normal;
+			if (isQuestion)
+			{
+				type = ChatType.Domanda;
+				isQuestion = false;
+			}
+		    this.SendChatMessage(this.InputFieldChat.text, type);
 			this.InputFieldChat.text = "";
 		}
 	}
@@ -246,7 +274,7 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 	public int TestLength = 2048;
 	private byte[] testBytes = new byte[2048];
 
-	private void SendChatMessage(string inputLine)
+	private void SendChatMessage(string inputLine, ChatType type)
 	{
 		if (string.IsNullOrEmpty(inputLine))
 		{
@@ -276,96 +304,96 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 		//UnityEngine.Debug.Log("selectedChannelName: " + selectedChannelName + " doingPrivateChat: " + doingPrivateChat + " privateChatTarget: " + privateChatTarget);
 
 
-		if (inputLine[0].Equals('\\'))
-		{
-			string[] tokens = inputLine.Split(new char[] {' '}, 2);
-			if (tokens[0].Equals("\\help"))
-			{
-			    this.PostHelpToCurrentChannel();
-			}
-			if (tokens[0].Equals("\\state"))
-			{
-				int newState = 0;
+		// if (inputLine[0].Equals('\\'))
+		// {
+		// 	string[] tokens = inputLine.Split(new char[] {' '}, 2);
+		// 	if (tokens[0].Equals("\\help"))
+		// 	{
+		// 	    this.PostHelpToCurrentChannel();
+		// 	}
+		// 	if (tokens[0].Equals("\\state"))
+		// 	{
+		// 		int newState = 0;
 
 
-				List<string> messages = new List<string>();
-				messages.Add ("i am state " + newState);
-				string[] subtokens = tokens[1].Split(new char[] {' ', ','});
+		// 		List<string> messages = new List<string>();
+		// 		messages.Add ("i am state " + newState);
+		// 		string[] subtokens = tokens[1].Split(new char[] {' ', ','});
 
-				if (subtokens.Length > 0)
-				{
-					newState = int.Parse(subtokens[0]);
-				}
+		// 		if (subtokens.Length > 0)
+		// 		{
+		// 			newState = int.Parse(subtokens[0]);
+		// 		}
 
-				if (subtokens.Length > 1)
-				{
-					messages.Add(subtokens[1]);
-				}
+		// 		if (subtokens.Length > 1)
+		// 		{
+		// 			messages.Add(subtokens[1]);
+		// 		}
 
-				this.chatClient.SetOnlineStatus(newState,messages.ToArray()); // this is how you set your own state and (any) message
-			}
-			else if ((tokens[0].Equals("\\subscribe") || tokens[0].Equals("\\s")) && !string.IsNullOrEmpty(tokens[1]))
-			{
-				this.chatClient.Subscribe(tokens[1].Split(new char[] {' ', ','}));
-			}
-			else if ((tokens[0].Equals("\\unsubscribe") || tokens[0].Equals("\\u")) && !string.IsNullOrEmpty(tokens[1]))
-			{
-				this.chatClient.Unsubscribe(tokens[1].Split(new char[] {' ', ','}));
-			}
-			else if (tokens[0].Equals("\\clear"))
-			{
-				if (doingPrivateChat)
-				{
-					this.chatClient.PrivateChannels.Remove(this.selectedChannelName);
-				}
-				else
-				{
-					ChatChannel channel;
-					if (this.chatClient.TryGetChannel(this.selectedChannelName, doingPrivateChat, out channel))
-					{
-						channel.ClearMessages();
-					}
-				}
-			}
-			else if (tokens[0].Equals("\\msg") && !string.IsNullOrEmpty(tokens[1]))
-			{
-				string[] subtokens = tokens[1].Split(new char[] {' ', ','}, 2);
-				if (subtokens.Length < 2) return;
+		// 		this.chatClient.SetOnlineStatus(newState,messages.ToArray()); // this is how you set your own state and (any) message
+		// 	}
+		// 	else if ((tokens[0].Equals("\\subscribe") || tokens[0].Equals("\\s")) && !string.IsNullOrEmpty(tokens[1]))
+		// 	{
+		// 		this.chatClient.Subscribe(tokens[1].Split(new char[] {' ', ','}));
+		// 	}
+		// 	else if ((tokens[0].Equals("\\unsubscribe") || tokens[0].Equals("\\u")) && !string.IsNullOrEmpty(tokens[1]))
+		// 	{
+		// 		this.chatClient.Unsubscribe(tokens[1].Split(new char[] {' ', ','}));
+		// 	}
+		// 	else if (tokens[0].Equals("\\clear"))
+		// 	{
+		// 		if (doingPrivateChat)
+		// 		{
+		// 			this.chatClient.PrivateChannels.Remove(this.selectedChannelName);
+		// 		}
+		// 		else
+		// 		{
+		// 			ChatChannel channel;
+		// 			if (this.chatClient.TryGetChannel(this.selectedChannelName, doingPrivateChat, out channel))
+		// 			{
+		// 				channel.ClearMessages();
+		// 			}
+		// 		}
+		// 	}
+		// 	else if (tokens[0].Equals("\\msg") && !string.IsNullOrEmpty(tokens[1]))
+		// 	{
+		// 		string[] subtokens = tokens[1].Split(new char[] {' ', ','}, 2);
+		// 		if (subtokens.Length < 2) return;
 
-				string targetUser = subtokens[0];
-				string message = subtokens[1];
-				this.chatClient.SendPrivateMessage(targetUser, message);
-			}
-			else if ((tokens[0].Equals("\\join") || tokens[0].Equals("\\j")) && !string.IsNullOrEmpty(tokens[1]))
-			{
-				string[] subtokens = tokens[1].Split(new char[] { ' ', ',' }, 2);
+		// 		string targetUser = subtokens[0];
+		// 		string message = subtokens[1];
+		// 		this.chatClient.SendPrivateMessage(targetUser, message);
+		// 	}
+		// 	else if ((tokens[0].Equals("\\join") || tokens[0].Equals("\\j")) && !string.IsNullOrEmpty(tokens[1]))
+		// 	{
+		// 		string[] subtokens = tokens[1].Split(new char[] { ' ', ',' }, 2);
 
-				// If we are already subscribed to the channel we directly switch to it, otherwise we subscribe to it first and then switch to it implicitly
-				if (this.channelToggles.ContainsKey(subtokens[0]))
-				{
-				    this.ShowChannel(subtokens[0]);
-				}
-				else
-				{
-					this.chatClient.Subscribe(new string[] { subtokens[0] });
-				}
-			}
-			else
-			{
-				Debug.Log("The command '" + tokens[0] + "' is invalid.");
-			}
-		}
-		else
-		{
+		// 		// If we are already subscribed to the channel we directly switch to it, otherwise we subscribe to it first and then switch to it implicitly
+		// 		if (this.channelToggles.ContainsKey(subtokens[0]))
+		// 		{
+		// 		    this.ShowChannel(subtokens[0]);
+		// 		}
+		// 		else
+		// 		{
+		// 			this.chatClient.Subscribe(new string[] { subtokens[0] });
+		// 		}
+		// 	}
+		// 	else
+		// 	{
+		// 		Debug.Log("The command '" + tokens[0] + "' is invalid.");
+		// 	}
+		// }
+		// else
+		// {
 			if (doingPrivateChat)
 			{
 				this.chatClient.SendPrivateMessage(privateChatTarget, inputLine);
 			}
 			else
 			{
-				this.chatClient.PublishMessage(this.selectedChannelName, inputLine);
+				this.chatClient.PublishMessage(this.selectedChannelName, inputLine, type);
 			}
-		}
+		// }
 	}
 
 	public void PostHelpToCurrentChannel()
@@ -539,7 +567,7 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 		}
 	}
 
-	public void OnGetMessages(string channelName, string[] senders, object[] messages)
+	public void OnGetMessages(string channelName, string[] senders, object[] messages, ChatType[] types)
 	{
 		if (channelName.Equals(this.selectedChannelName))
 		{
@@ -607,7 +635,7 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 
 		if (channel != null)
 		{
-			channel.Add("Bot", msg,0); //TODO: how to use msgID?
+			// channel.Add("Bot", msg,0); TODO: how to use msgID?
 		}
 	}
 
@@ -631,6 +659,7 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 		this.selectedChannelName = channelName;
 		// this.CurrentChannelText.text = 
 		channel.ToStringMessages(MessagePrefab);
+			
 		Debug.Log("ShowChannel: " + this.selectedChannelName);
 
 		foreach (KeyValuePair<string, Toggle> pair in this.channelToggles)
@@ -644,7 +673,28 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 		Application.OpenURL("https://dashboard.photonengine.com");
 	}
 
+	public void OpenChatWrite()
+	{
+		chatWriteGB.SetActive(true);
+		chatWriteButtonGB.SetActive(false);
+	}
 
+	public void QuestionButton()
+	{
+		isQuestion = isQuestion ? false : true;
+		isAnswer = false;
+		isGuideQuestion = false;
+	}
 
+	public void GuideQuestionButton()
+	{
+		isQuestion = false;
+		isAnswer = false;
+		isGuideQuestion = isGuideQuestion ? false : true;
+	}
+	public void AnswerButton()
+	{
+		
+	}
 
 }

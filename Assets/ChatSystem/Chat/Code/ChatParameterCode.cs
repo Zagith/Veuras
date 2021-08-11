@@ -26,7 +26,8 @@ namespace Photon.Chat
         /// <summary>(6) Not used.</summary>
         public const byte ChannelUserCount = 6;
         /// <summary>(225) Name of user to send a (private) message to.</summary><remarks>The code is used in LoadBalancing and copied over here.</remarks>
-        public const byte MessageType = 7;
+        public const byte MessagesType = 7;
+        public const byte MessageType = 13;
         public const byte UserId = 225;
         /// <summary>(8) Id of a message.</summary>
         public const byte MsgId = 8;

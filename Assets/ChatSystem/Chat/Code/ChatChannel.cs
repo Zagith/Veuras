@@ -74,21 +74,26 @@ namespace Photon.Chat
         }
 
         /// <summary>Used internally to add messages to this channel.</summary>
-        public void Add(string sender, object message, int msgId)
-        {
-            this.Senders.Add(sender);
-            this.Messages.Add(message);
-            // this.MessageType.Add(type);
-            this.LastMsgId = msgId;
-            this.TruncateMessages();
-        }
+        // public void Add(string sender, object message, int msgId, ChatType type)
+        // {
+        //     this.Senders.Add(sender);
+        //     this.Messages.Add(message);
+        //     this.MessageType.Add(type);
+        //     this.LastMsgId = msgId;
+        //     this.TruncateMessages();
+        // }
 
         /// <summary>Used internally to add messages to this channel.</summary>
-        public void Add(string[] senders, object[] messages, int lastMsgId)
+        public void Add(string[] senders, object[] messages, int lastMsgId, ChatType[] type)
         {
             this.Senders.AddRange(senders);
             this.Messages.AddRange(messages);
-            // this.MessageType.AddRange(type);
+            this.MessageType.AddRange(type);
+            foreach (ChatType typee in MessageType)
+            {
+                
+            Debug.Log($"ciaofiei {typee} {MessageType.Count}");
+            }
             this.LastMsgId = lastMsgId;
             this.TruncateMessages();
         }
@@ -132,14 +137,24 @@ namespace Photon.Chat
             MessageAttributes messageAttributes;
             StringBuilder txt = new StringBuilder();
             if (this.Messages.Count > 1)
-        {
-            for (int p = 0; p < this.Messages.Count - 1; p++)
             {
-                Destroy(ChatGui.instance.CurrentChannelText.gameObject.transform.GetChild(p).gameObject);
+                for (int p = 0; p < this.Messages.Count - 1; p++)
+                {
+                    Destroy(ChatGui.instance.CurrentChannelText.gameObject.transform.GetChild(p).gameObject);
+                }
             }
-        }
             for (int i = 0; i < this.Messages.Count; i++)
             {
+                Debug.Log($"Type: {ChatGui.instance.MessagesType[i]}");
+                switch (ChatGui.instance.MessagesType[i])
+                {
+                    case ChatType.Normal:
+                        messagePrefab = ChatGui.instance.MessagePrefab;
+                    break;
+                    case ChatType.Domanda:
+                        messagePrefab = ChatGui.instance.AnswerMessagePrefab;
+                    break;
+                }
                 GameObject messageGB = Instantiate(messagePrefab);
                 messageGB.transform.SetParent(ChatGui.instance.CurrentChannelText.gameObject.transform, false);
 

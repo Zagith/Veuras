@@ -48,7 +48,7 @@ namespace Photon.Chat
         /// <param name="channelName">channel from where messages came</param>
         /// <param name="senders">list of users who sent messages</param>
         /// <param name="messages">list of messages it self</param>
-        void OnGetMessages(string channelName, string[] senders, object[] messages);
+        void OnGetMessages(string channelName, string[] senders, object[] messages, ChatType[] types);
 
         /// <summary>
         /// Notifies client about private message

@@ -131,6 +131,7 @@ namespace Photon.Chat
         /// <summary> Private channels in which this client has exchanged messages. </summary>
         public readonly Dictionary<string, ChatChannel> PrivateChannels;
 
+        
         // channels being in unsubscribing process
         // items will be removed on successful unsubscription or subscription (the latter required after attempt to unsubscribe from not existing channel)
         private readonly HashSet<string> PublicChannelsUnsubscribing;
@@ -494,17 +495,17 @@ namespace Photon.Chat
         /// <param name="message">Your message (string or any serializable data).</param>
         /// <param name="forwardAsWebhook">Optionally, public messages can be forwarded as webhooks. Configure webhooks for your Chat app to use this.</param>
         /// <returns>False if the client is not yet ready to send messages.</returns>
-        public bool PublishMessage(string channelName, object message, bool forwardAsWebhook = false)
+        public bool PublishMessage(string channelName, object message, ChatType type, bool forwardAsWebhook = false)
         {
-            return this.publishMessage(channelName, message, true, forwardAsWebhook);
+            return this.publishMessage(channelName, message, true, type, forwardAsWebhook);
         }
 
-        internal bool PublishMessageUnreliable(string channelName, object message, bool forwardAsWebhook = false)
+        internal bool PublishMessageUnreliable(string channelName, object message, ChatType type, bool forwardAsWebhook = false)
         {
-            return this.publishMessage(channelName, message, false, forwardAsWebhook);
+            return this.publishMessage(channelName, message, false, type, forwardAsWebhook);
         }
 
-        private bool publishMessage(string channelName, object message, bool reliable, bool forwardAsWebhook = false)
+        private bool publishMessage(string channelName, object message, bool reliable, ChatType type, bool forwardAsWebhook = false)
         {
             if (!this.CanChat)
             {
@@ -527,13 +528,14 @@ namespace Photon.Chat
             Dictionary<byte, object> parameters = new Dictionary<byte, object>
                 {
                     { (byte)ChatParameterCode.Channel, channelName },
-                    { (byte)ChatParameterCode.Message, message }
+                    { (byte)ChatParameterCode.Message, message },
+                    { (byte)ChatParameterCode.MessageType, (byte)type }
                 };
+            ChatGui.instance.MessagesType.Add(type);
             if (forwardAsWebhook)
             {
                 parameters.Add(ChatParameterCode.WebFlags, (byte)0x1);
             }
-
             return this.chatPeer.SendOperation(ChatOperationCode.Publish, parameters, new SendOptions() { Reliability = reliable });
         }
 
@@ -1060,7 +1062,7 @@ namespace Photon.Chat
 
             object message = (object)eventData.Parameters[(byte)ChatParameterCode.Message];
             string sender = (string)eventData.Parameters[(byte)ChatParameterCode.Sender];
-            // ChatType type = (ChatType)eventData.Parameters[(byte)ChatParameterCode.MessageType];
+            ChatType type = (ChatType)eventData.Parameters[13];
             int msgId = (int)eventData.Parameters[ChatParameterCode.MsgId];
 
             string channelName;
@@ -1083,7 +1085,7 @@ namespace Photon.Chat
                 this.PrivateChannels.Add(channel.Name, channel);
             }
 
-            channel.Add(sender, message, msgId);
+            // channel.Add(sender, message, msgId, type);
             this.listener.OnPrivateMessage(sender, message, channelName);
         }
 
@@ -1091,10 +1093,9 @@ namespace Photon.Chat
         {
             object[] messages = (object[])eventData.Parameters[(byte)ChatParameterCode.Messages];
             string[] senders = (string[])eventData.Parameters[(byte)ChatParameterCode.Senders];
+            ChatType[] type = ChatGui.instance.MessagesType.ToArray();
             string channelName = (string)eventData.Parameters[(byte)ChatParameterCode.Channel];
-            // ChatType[] type = (ChatType[])eventData.Parameters[(byte)ChatParameterCode.MsgId];
             int lastMsgId = (int)eventData.Parameters[ChatParameterCode.MsgId];
-
             ChatChannel channel;
             if (!this.PublicChannels.TryGetValue(channelName, out channel))
             {
@@ -1105,8 +1106,9 @@ namespace Photon.Chat
                 return;
             }
 
-            channel.Add(senders, messages, lastMsgId);
-            this.listener.OnGetMessages(channelName, senders, messages);
+            // channel.ClearMessages();
+            channel.Add(senders, messages, lastMsgId, type);
+            this.listener.OnGetMessages(channelName, senders, messages, type);
         }
 
         private void HandleSubscribeEvent(EventData eventData)
