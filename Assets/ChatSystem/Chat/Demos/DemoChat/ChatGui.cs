@@ -53,6 +53,15 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 	public bool isGuideQuestion;
 	public bool isAnswer;
 
+	[Header("Prefab Risposte")]
+
+	public GameObject answerPanelGB;
+
+	public GameObject answerMessagePrefab;
+
+	public GameObject answerListGB;
+
+
 	[Header("Impostazioni Chat")]
 	public string[] ChannelsToJoinOnConnect; // set in inspector. Demo channels to join automatically.
 
@@ -98,6 +107,7 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 	public Text UserIdText; // set in inspector
 
 	public List<ChatType> MessagesType = new List<ChatType>();
+
 
 	// private static string WelcomeText = "Welcome to chat. Type \\help to list commands.";
 	private static string HelpText = "\n    -- HELP --\n" +
@@ -694,7 +704,7 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 	}
 	public void AnswerButton()
 	{
-		
+		answerPanelGB.SetActive(answerPanelGB.activeSelf ? false : true);
 	}
 
 }

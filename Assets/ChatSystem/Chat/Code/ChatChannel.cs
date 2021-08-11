@@ -153,6 +153,11 @@ namespace Photon.Chat
                     break;
                     case ChatType.Domanda:
                         messagePrefab = ChatGui.instance.AnswerMessagePrefab;
+                        GameObject answerGB = Instantiate(ChatGui.instance.answerMessagePrefab);
+                        answerGB.transform.SetParent(ChatGui.instance.answerListGB.gameObject.transform, false);
+
+                        messageAttributes = answerGB.GetComponent<MessageAttributes>();
+                        messageAttributes.messageText.text = this.Messages[i].ToString();
                     break;
                 }
                 GameObject messageGB = Instantiate(messagePrefab);
