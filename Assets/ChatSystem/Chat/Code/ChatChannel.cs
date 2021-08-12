@@ -40,6 +40,10 @@ namespace Photon.Chat
         /// <summary>Messages in chronological order. Senders and Messages refer to each other by index. Senders[x] is the sender of Messages[x].</summary>
         public readonly List<object> Messages = new List<object>();
 
+        public readonly List<object> GuideMessages = new List<object>();
+
+        public readonly List<string> GuideSenders = new List<string>();
+
         public readonly List<string> MessageType = new List<string>();
 
         /// <summary>If greater than 0, this channel will limit the number of messages, that it caches locally.</summary>
@@ -93,6 +97,13 @@ namespace Photon.Chat
             this.TruncateMessages();
         }
 
+        public void Add(string[] senders, object[] messages)
+        {
+            this.GuideSenders.AddRange(senders);
+            this.GuideMessages.AddRange(messages);
+            this.TruncateMessages();
+        }
+
         /// <summary>Reduces the number of locally cached messages in this channel to the MessageLimit (if set).</summary>
         public void TruncateMessages()
         {
@@ -115,6 +126,12 @@ namespace Photon.Chat
             this.MessageType.Clear();
         }
 
+        public void ClearGuideMessages()
+        {
+            this.GuideSenders.Clear();
+            this.GuideMessages.Clear();
+        }
+
         /// <summary>Provides a string-representation of all messages in this channel.</summary>
         /// <returns>All known messages in format "Sender: Message", line by line.</returns>
         public string ToStringMessages()
@@ -133,6 +150,7 @@ namespace Photon.Chat
             StringBuilder txt = new StringBuilder();
             if (this.Messages.Count > 1)
             {
+                Debug.Log("entro");
                 for (int p = 0; p < this.Messages.Count - 1; p++)
                 {
                     Destroy(ChatGui.instance.CurrentChannelText.gameObject.transform.GetChild(p).gameObject);
@@ -160,6 +178,22 @@ namespace Photon.Chat
                 messageAttributes = messageGB.GetComponent<MessageAttributes>();
                 messageAttributes.messageText.text = this.Messages[i].ToString();
                 // txt.AppendLine(string.Format("{0}: {1}", this.Senders[i], this.Messages[i]));
+            }
+
+            if (this.GuideMessages.Count > 1)
+            {
+                for (int p = 0; p < this.GuideMessages.Count - 1; p++)
+                {
+                    Destroy(ChatGui.instance.guideAnswerListGB.gameObject.transform.GetChild(p).gameObject);
+                }
+            }
+            for (int i = 0; i < this.GuideMessages.Count; i++)
+            {
+                GameObject guideAnswerGB = Instantiate(ChatGui.instance.answerMessagePrefab);
+                guideAnswerGB.transform.SetParent(ChatGui.instance.guideAnswerListGB.gameObject.transform, false);
+
+                messageAttributes = guideAnswerGB.GetComponent<MessageAttributes>();
+                messageAttributes.messageText.text = this.GuideMessages[i].ToString();
             }
             // return txt.ToString();
         }

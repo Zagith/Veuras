@@ -12,6 +12,7 @@ namespace Photon.Chat
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using ExitGames.Client.Photon;
 
     #if SUPPORTED_UNITY || NETFX_CORE
@@ -1092,17 +1093,38 @@ namespace Photon.Chat
         {
             object[] messages = (object[])eventData.Parameters[(byte)ChatParameterCode.Messages];
             string[] senders = (string[])eventData.Parameters[(byte)ChatParameterCode.Senders];
+            object[] guideMessages;
+            string[] guideSenders;
             string[] type;
+
             List<string> splits = new List<string>();
             List<string> splits2 = new List<string>();
+            List<string> splits3 = new List<string>();
+            List<string> guideMessage = new List<string>();
+            List<string> guideSender = new List<string>();
+
             for (int i = 0; i < messages.Length; i++)
             {
                 string[] split = messages[i].ToString().Split('^');
-                splits.Add(split[0]);
-                splits2.Add(split[1]);
+                if (split[0] == "Guida")
+                {
+                    guideMessage.Add(split[1]);
+                    guideSender.Add(senders[i]);
+                }
+                else
+                {
+                    splits.Add(split[0]);
+                    splits2.Add(split[1]);
+                    splits3.Add(senders[i]);
+                }
             }
+
             type = splits.ToArray();
             messages = splits2.ToArray();
+            senders = splits3.ToArray();
+            guideMessages = guideMessage.ToArray();
+            guideSenders = guideSender.ToArray();
+
             string channelName = (string)eventData.Parameters[(byte)ChatParameterCode.Channel];
             int lastMsgId = (int)eventData.Parameters[ChatParameterCode.MsgId];
             ChatChannel channel;
@@ -1116,6 +1138,12 @@ namespace Photon.Chat
             }
 
             // channel.ClearMessages();
+            if (guideSenders.Any() && guideMessages.Any())
+            {
+                channel.ClearGuideMessages();
+                channel.Add(guideSenders, guideMessages);
+            }
+            channel.ClearMessages();
             channel.Add(senders, messages, lastMsgId, type);
             this.listener.OnGetMessages(channelName, senders, messages, type);
         }

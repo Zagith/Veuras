@@ -53,13 +53,19 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 	public bool isGuideQuestion;
 	public bool isAnswer;
 
-	[Header("Prefab Risposte")]
+	[Header("Settings Risposte")]
 
 	public GameObject answerPanelGB;
 
 	public GameObject answerMessagePrefab;
 
 	public GameObject answerListGB;
+
+	[Header("Settings Domande Guida")]
+
+	public GameObject guideAnswerPanelGB;
+
+	public GameObject guideAnswerListGB;
 
 
 	[Header("Impostazioni Chat")]
@@ -270,7 +276,12 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 		if (this.InputFieldChat != null)
 		{
 			ChatType type = ChatType.Normal;
-			if (isQuestion)
+			if (isGuideQuestion)
+			{
+				type = ChatType.Guida;
+				isGuideQuestion = false;
+			}
+			else if (isQuestion)
 			{
 				type = ChatType.Domanda;
 				isQuestion = false;
@@ -699,13 +710,25 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 
 	public void GuideQuestionButton()
 	{
-		isQuestion = false;
-		isAnswer = false;
-		isGuideQuestion = isGuideQuestion ? false : true;
+		if (AccountManager.instance.UserToken == 5 || AccountManager.instance.UserToken == 9)
+		{
+			guideAnswerPanelGB.SetActive(guideAnswerPanelGB.activeSelf ? false : true);
+		}
+		else
+		{
+			isQuestion = false;
+			isAnswer = false;
+			isGuideQuestion = isGuideQuestion ? false : true;
+		}
+		
 	}
 	public void AnswerButton()
 	{
 		answerPanelGB.SetActive(answerPanelGB.activeSelf ? false : true);
 	}
 
+	public void GuideQuestionPanel()
+	{
+		guideAnswerPanelGB.SetActive(false);
+	}
 }
