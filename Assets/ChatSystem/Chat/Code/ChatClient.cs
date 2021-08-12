@@ -495,17 +495,17 @@ namespace Photon.Chat
         /// <param name="message">Your message (string or any serializable data).</param>
         /// <param name="forwardAsWebhook">Optionally, public messages can be forwarded as webhooks. Configure webhooks for your Chat app to use this.</param>
         /// <returns>False if the client is not yet ready to send messages.</returns>
-        public bool PublishMessage(string channelName, object message, ChatType type, bool forwardAsWebhook = false)
+        public bool PublishMessage(string channelName, object message, bool forwardAsWebhook = false)
         {
-            return this.publishMessage(channelName, message, true, type, forwardAsWebhook);
+            return this.publishMessage(channelName, message, true, forwardAsWebhook);
         }
 
         internal bool PublishMessageUnreliable(string channelName, object message, ChatType type, bool forwardAsWebhook = false)
         {
-            return this.publishMessage(channelName, message, false, type, forwardAsWebhook);
+            return this.publishMessage(channelName, message, false, forwardAsWebhook);
         }
 
-        private bool publishMessage(string channelName, object message, bool reliable, ChatType type, bool forwardAsWebhook = false)
+        private bool publishMessage(string channelName, object message, bool reliable, bool forwardAsWebhook = false)
         {
             if (!this.CanChat)
             {
@@ -528,10 +528,9 @@ namespace Photon.Chat
             Dictionary<byte, object> parameters = new Dictionary<byte, object>
                 {
                     { (byte)ChatParameterCode.Channel, channelName },
-                    { (byte)ChatParameterCode.Message, message },
-                    { (byte)ChatParameterCode.MessageType, (byte)type }
+                    { (byte)ChatParameterCode.Message, message }
                 };
-            ChatGui.instance.MessagesType.Add(type);
+            // ChatGui.instance.MessagesType.Add(type);
             if (forwardAsWebhook)
             {
                 parameters.Add(ChatParameterCode.WebFlags, (byte)0x1);
@@ -1093,7 +1092,17 @@ namespace Photon.Chat
         {
             object[] messages = (object[])eventData.Parameters[(byte)ChatParameterCode.Messages];
             string[] senders = (string[])eventData.Parameters[(byte)ChatParameterCode.Senders];
-            ChatType[] type = ChatGui.instance.MessagesType.ToArray();
+            string[] type;
+            List<string> splits = new List<string>();
+            List<string> splits2 = new List<string>();
+            for (int i = 0; i < messages.Length; i++)
+            {
+                string[] split = messages[i].ToString().Split('^');
+                splits.Add(split[0]);
+                splits2.Add(split[1]);
+            }
+            type = splits.ToArray();
+            messages = splits2.ToArray();
             string channelName = (string)eventData.Parameters[(byte)ChatParameterCode.Channel];
             int lastMsgId = (int)eventData.Parameters[ChatParameterCode.MsgId];
             ChatChannel channel;

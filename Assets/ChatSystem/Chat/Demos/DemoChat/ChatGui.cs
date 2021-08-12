@@ -401,7 +401,8 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 			}
 			else
 			{
-				this.chatClient.PublishMessage(this.selectedChannelName, inputLine, type);
+				inputLine = $"{type}^{inputLine}";
+				this.chatClient.PublishMessage(this.selectedChannelName, inputLine);
 			}
 		// }
 	}
@@ -577,7 +578,7 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 		}
 	}
 
-	public void OnGetMessages(string channelName, string[] senders, object[] messages, ChatType[] types)
+	public void OnGetMessages(string channelName, string[] senders, object[] messages, string[] types)
 	{
 		if (channelName.Equals(this.selectedChannelName))
 		{

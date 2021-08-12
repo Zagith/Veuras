@@ -40,7 +40,7 @@ namespace Photon.Chat
         /// <summary>Messages in chronological order. Senders and Messages refer to each other by index. Senders[x] is the sender of Messages[x].</summary>
         public readonly List<object> Messages = new List<object>();
 
-        public readonly List<ChatType> MessageType = new List<ChatType>();
+        public readonly List<string> MessageType = new List<string>();
 
         /// <summary>If greater than 0, this channel will limit the number of messages, that it caches locally.</summary>
         public int MessageLimit;
@@ -84,16 +84,11 @@ namespace Photon.Chat
         // }
 
         /// <summary>Used internally to add messages to this channel.</summary>
-        public void Add(string[] senders, object[] messages, int lastMsgId, ChatType[] type)
+        public void Add(string[] senders, object[] messages, int lastMsgId, string[] type)
         {
             this.Senders.AddRange(senders);
             this.Messages.AddRange(messages);
             this.MessageType.AddRange(type);
-            foreach (ChatType typee in MessageType)
-            {
-                
-            Debug.Log($"ciaofiei {typee} {MessageType.Count}");
-            }
             this.LastMsgId = lastMsgId;
             this.TruncateMessages();
         }
@@ -145,13 +140,12 @@ namespace Photon.Chat
             }
             for (int i = 0; i < this.Messages.Count; i++)
             {
-                Debug.Log($"Type: {ChatGui.instance.MessagesType[i]}");
-                switch (ChatGui.instance.MessagesType[i])
+                switch (this.MessageType[i])
                 {
-                    case ChatType.Normal:
+                    case "Normal":
                         messagePrefab = ChatGui.instance.MessagePrefab;
                     break;
-                    case ChatType.Domanda:
+                    case "Domanda":
                         messagePrefab = ChatGui.instance.AnswerMessagePrefab;
                         GameObject answerGB = Instantiate(ChatGui.instance.answerMessagePrefab);
                         answerGB.transform.SetParent(ChatGui.instance.answerListGB.gameObject.transform, false);
