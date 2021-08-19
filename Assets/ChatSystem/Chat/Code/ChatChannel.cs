@@ -13,6 +13,8 @@ namespace Photon.Chat
 {
     using System.Collections.Generic;
     using System.Text;
+    using Crosstales.BWF;
+    using Crosstales.BWF.Model;
 
     #if SUPPORTED_UNITY || NETFX_CORE
     using Hashtable = ExitGames.Client.Photon.Hashtable;
@@ -71,6 +73,9 @@ namespace Photon.Chat
 
         /// <summary>Subscribed users.</summary>
         public readonly HashSet<string> Subscribers = new HashSet<string>();
+
+        private ManagerMask Mask = ManagerMask.BadWord;
+        private string[] Sources;
 
         /// <summary>Used internally to create new channels. This does NOT create a channel on the server! Use ChatClient.Subscribe.</summary>
         public ChatChannel(string name)
@@ -173,7 +178,7 @@ namespace Photon.Chat
                         questionGB.transform.SetParent(ChatGui.instance.answerListGB.gameObject.transform, false);
                         questionGB.name = $"{this.LastMsgId[i]}";
                         messageAttributes = questionGB.GetComponent<MessageAttributes>();
-                        messageAttributes.messageText.text = this.Messages[i].ToString();
+                        messageAttributes.messageText.text = BWFManager.ReplaceAll(this.Messages[i].ToString(), Mask, Sources);
                     break;
                     case "Rispondi":
                         GameObject parentMessage = GameObject.Find(this.AnswerMsgId[i]);
@@ -181,7 +186,7 @@ namespace Photon.Chat
                         answerGB.transform.SetParent(parentMessage.GetComponent<MessageAttributes>().AnswerListGB.transform, false);
 
                         messageAttributes = answerGB.GetComponent<MessageAttributes>();
-                        messageAttributes.messageText.text = this.Messages[i].ToString();
+                        messageAttributes.messageText.text = BWFManager.ReplaceAll(this.Messages[i].ToString(), Mask, Sources);
                         parentMessage.GetComponent<MessageAttributes>().ArrowAnsers.SetActive(true);
                     return;
                 }
@@ -189,7 +194,7 @@ namespace Photon.Chat
                 messageGB.transform.SetParent(ChatGui.instance.CurrentChannelText.gameObject.transform, false);
 
                 messageAttributes = messageGB.GetComponent<MessageAttributes>();
-                messageAttributes.messageText.text = this.Messages[i].ToString();
+                        messageAttributes.messageText.text = BWFManager.ReplaceAll(this.Messages[i].ToString(), Mask, Sources);
                 // txt.AppendLine(string.Format("{0}: {1}", this.Senders[i], this.Messages[i]));
             }
 
