@@ -58,7 +58,8 @@ namespace Photon.Chat
         /// <summary>
         /// ID of the last message received.
         /// </summary>
-        public int LastMsgId { get; protected set; }
+        public List<int> LastMsgId = new List<int>();
+        public List<string> AnswerMsgId = new List<string>();
 
         private Dictionary<object, object> properties;
 
@@ -88,12 +89,13 @@ namespace Photon.Chat
         // }
 
         /// <summary>Used internally to add messages to this channel.</summary>
-        public void Add(string[] senders, object[] messages, int lastMsgId, string[] type)
+        public void Add(string[] senders, object[] messages, int[] lastMsgId, string[] type, string[] answerMsgId)
         {
             this.Senders.AddRange(senders);
             this.Messages.AddRange(messages);
             this.MessageType.AddRange(type);
-            this.LastMsgId = lastMsgId;
+            this.LastMsgId.AddRange(lastMsgId);
+            this.AnswerMsgId.AddRange(answerMsgId);
             this.TruncateMessages();
         }
 
@@ -124,6 +126,8 @@ namespace Photon.Chat
             this.Senders.Clear();
             this.Messages.Clear();
             this.MessageType.Clear();
+            this.AnswerMsgId.Clear();
+            this.LastMsgId.Clear();
         }
 
         public void ClearGuideMessages()
@@ -165,12 +169,21 @@ namespace Photon.Chat
                     break;
                     case "Domanda":
                         messagePrefab = ChatGui.instance.AnswerMessagePrefab;
-                        GameObject answerGB = Instantiate(ChatGui.instance.answerMessagePrefab);
-                        answerGB.transform.SetParent(ChatGui.instance.answerListGB.gameObject.transform, false);
+                        GameObject questionGB = Instantiate(ChatGui.instance.answerMessagePrefab);
+                        questionGB.transform.SetParent(ChatGui.instance.answerListGB.gameObject.transform, false);
+                        questionGB.name = $"{this.LastMsgId[i]}";
+                        messageAttributes = questionGB.GetComponent<MessageAttributes>();
+                        messageAttributes.messageText.text = this.Messages[i].ToString();
+                    break;
+                    case "Rispondi":
+                        GameObject parentMessage = GameObject.Find(this.AnswerMsgId[i]);
+                        GameObject answerGB = Instantiate(ChatGui.instance.answerMessageQuestionPrefab);
+                        answerGB.transform.SetParent(parentMessage.GetComponent<MessageAttributes>().AnswerListGB.transform, false);
 
                         messageAttributes = answerGB.GetComponent<MessageAttributes>();
                         messageAttributes.messageText.text = this.Messages[i].ToString();
-                    break;
+                        parentMessage.GetComponent<MessageAttributes>().ArrowAnsers.SetActive(true);
+                    return;
                 }
                 GameObject messageGB = Instantiate(messagePrefab);
                 messageGB.transform.SetParent(ChatGui.instance.CurrentChannelText.gameObject.transform, false);

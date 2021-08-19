@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6373890888401803316}
   - component: {fileID: 8823285761995795922}
   - component: {fileID: 7481233484564152961}
+  - component: {fileID: 1752734047245053951}
   m_Layer: 5
   m_Name: Rispondi
   m_TagString: Untagged
@@ -118,7 +119,30 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8823285761995795922}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1752734047245053951}
+        m_MethodName: AnswerButtonEvent
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &1752734047245053951
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2016649409913898441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fad504d861e76564c93e1c94e74f1ab4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2802067490067010784
 GameObject:
   m_ObjectHideFlags: 0
@@ -380,8 +404,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 80, y: -10}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: 75, y: -2.6}
+  m_SizeDelta: {x: 90.12097, y: 85.18146}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5921341981734692005
 CanvasRenderer:
@@ -467,7 +491,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 50.000004, y: 0}
+  m_AnchoredPosition: {x: 45.06, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &15632702606276854
@@ -497,7 +521,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 3a963201064a3c9449b0153f570dae0c, type: 3}
+  m_Sprite: {fileID: 1652773741919175640, guid: 02454301f47932b4dae8862a50179ec3,
+    type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

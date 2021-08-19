@@ -1096,10 +1096,14 @@ namespace Photon.Chat
             object[] guideMessages;
             string[] guideSenders;
             string[] type;
+            int[] msgId;
+            string[] msgAnswerId;
 
             List<string> splits = new List<string>();
             List<string> splits2 = new List<string>();
             List<string> splits3 = new List<string>();
+            List<int> splits4 = new List<int>();
+            List<string> splits5 = new List<string>();
             List<string> guideMessage = new List<string>();
             List<string> guideSender = new List<string>();
 
@@ -1108,17 +1112,25 @@ namespace Photon.Chat
                 string[] split = messages[i].ToString().Split('^');
                 if (split[0] == "Guida")
                 {
-                    guideMessage.Add(split[1]);
+                    guideMessage.Add(split[2]);
                     guideSender.Add(senders[i]);
                 }
                 else
                 {
-                    splits.Add(split[0]);
-                    splits2.Add(split[1]);
+                    splits4.Add(Convert.ToInt32(split[0]));
+                    splits.Add(split[1]);
+                    splits2.Add(split[2]);
+                    splits5.Add(split[3]);
+                    // else
+                    // {
+                    //     splits5.Add(i);
+                    // }
                     splits3.Add(senders[i]);
                 }
             }
 
+            msgAnswerId = splits5.ToArray();
+            msgId = splits4.ToArray();
             type = splits.ToArray();
             messages = splits2.ToArray();
             senders = splits3.ToArray();
@@ -1144,7 +1156,7 @@ namespace Photon.Chat
                 channel.Add(guideSenders, guideMessages);
             }
             channel.ClearMessages();
-            channel.Add(senders, messages, lastMsgId, type);
+            channel.Add(senders, messages, msgId, type, msgAnswerId);
             this.listener.OnGetMessages(channelName, senders, messages, type);
         }
 
