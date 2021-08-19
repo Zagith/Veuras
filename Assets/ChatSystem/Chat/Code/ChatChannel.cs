@@ -13,6 +13,8 @@ namespace Photon.Chat
 {
     using System.Collections.Generic;
     using System.Text;
+    using Crosstales.BWF;
+    using Crosstales.BWF.Model;
 
     #if SUPPORTED_UNITY || NETFX_CORE
     using Hashtable = ExitGames.Client.Photon.Hashtable;
@@ -40,7 +42,11 @@ namespace Photon.Chat
         /// <summary>Messages in chronological order. Senders and Messages refer to each other by index. Senders[x] is the sender of Messages[x].</summary>
         public readonly List<object> Messages = new List<object>();
 
-        public readonly List<ChatType> MessageType = new List<ChatType>();
+        public readonly List<object> GuideMessages = new List<object>();
+
+        public readonly List<string> GuideSenders = new List<string>();
+
+        public readonly List<string> MessageType = new List<string>();
 
         /// <summary>If greater than 0, this channel will limit the number of messages, that it caches locally.</summary>
         public int MessageLimit;
@@ -54,7 +60,8 @@ namespace Photon.Chat
         /// <summary>
         /// ID of the last message received.
         /// </summary>
-        public int LastMsgId { get; protected set; }
+        public List<int> LastMsgId = new List<int>();
+        public List<string> AnswerMsgId = new List<string>();
 
         private Dictionary<object, object> properties;
 
@@ -66,6 +73,9 @@ namespace Photon.Chat
 
         /// <summary>Subscribed users.</summary>
         public readonly HashSet<string> Subscribers = new HashSet<string>();
+
+        private ManagerMask Mask = ManagerMask.BadWord;
+        private string[] Sources;
 
         /// <summary>Used internally to create new channels. This does NOT create a channel on the server! Use ChatClient.Subscribe.</summary>
         public ChatChannel(string name)
@@ -84,17 +94,20 @@ namespace Photon.Chat
         // }
 
         /// <summary>Used internally to add messages to this channel.</summary>
-        public void Add(string[] senders, object[] messages, int lastMsgId, ChatType[] type)
+        public void Add(string[] senders, object[] messages, int[] lastMsgId, string[] type, string[] answerMsgId)
         {
             this.Senders.AddRange(senders);
             this.Messages.AddRange(messages);
             this.MessageType.AddRange(type);
-            foreach (ChatType typee in MessageType)
-            {
-                
-            Debug.Log($"ciaofiei {typee} {MessageType.Count}");
-            }
-            this.LastMsgId = lastMsgId;
+            this.LastMsgId.AddRange(lastMsgId);
+            this.AnswerMsgId.AddRange(answerMsgId);
+            this.TruncateMessages();
+        }
+
+        public void Add(string[] senders, object[] messages)
+        {
+            this.GuideSenders.AddRange(senders);
+            this.GuideMessages.AddRange(messages);
             this.TruncateMessages();
         }
 
@@ -118,6 +131,14 @@ namespace Photon.Chat
             this.Senders.Clear();
             this.Messages.Clear();
             this.MessageType.Clear();
+            this.AnswerMsgId.Clear();
+            this.LastMsgId.Clear();
+        }
+
+        public void ClearGuideMessages()
+        {
+            this.GuideSenders.Clear();
+            this.GuideMessages.Clear();
         }
 
         /// <summary>Provides a string-representation of all messages in this channel.</summary>
@@ -138,6 +159,7 @@ namespace Photon.Chat
             StringBuilder txt = new StringBuilder();
             if (this.Messages.Count > 1)
             {
+                Debug.Log("entro");
                 for (int p = 0; p < this.Messages.Count - 1; p++)
                 {
                     Destroy(ChatGui.instance.CurrentChannelText.gameObject.transform.GetChild(p).gameObject);
@@ -145,27 +167,51 @@ namespace Photon.Chat
             }
             for (int i = 0; i < this.Messages.Count; i++)
             {
-                Debug.Log($"Type: {ChatGui.instance.MessagesType[i]}");
-                switch (ChatGui.instance.MessagesType[i])
+                switch (this.MessageType[i])
                 {
-                    case ChatType.Normal:
+                    case "Normal":
                         messagePrefab = ChatGui.instance.MessagePrefab;
                     break;
-                    case ChatType.Domanda:
+                    case "Domanda":
                         messagePrefab = ChatGui.instance.AnswerMessagePrefab;
-                        GameObject answerGB = Instantiate(ChatGui.instance.answerMessagePrefab);
-                        answerGB.transform.SetParent(ChatGui.instance.answerListGB.gameObject.transform, false);
+                        GameObject questionGB = Instantiate(ChatGui.instance.answerMessagePrefab);
+                        questionGB.transform.SetParent(ChatGui.instance.answerListGB.gameObject.transform, false);
+                        questionGB.name = $"{this.LastMsgId[i]}";
+                        messageAttributes = questionGB.GetComponent<MessageAttributes>();
+                        messageAttributes.messageText.text = BWFManager.ReplaceAll(this.Messages[i].ToString(), Mask, Sources);
+                    break;
+                    case "Rispondi":
+                        GameObject parentMessage = GameObject.Find(this.AnswerMsgId[i]);
+                        GameObject answerGB = Instantiate(ChatGui.instance.answerMessageQuestionPrefab);
+                        answerGB.transform.SetParent(parentMessage.GetComponent<MessageAttributes>().AnswerListGB.transform, false);
 
                         messageAttributes = answerGB.GetComponent<MessageAttributes>();
-                        messageAttributes.messageText.text = this.Messages[i].ToString();
-                    break;
+                        messageAttributes.messageText.text = BWFManager.ReplaceAll(this.Messages[i].ToString(), Mask, Sources);
+                        parentMessage.GetComponent<MessageAttributes>().ArrowAnsers.SetActive(true);
+                    return;
                 }
                 GameObject messageGB = Instantiate(messagePrefab);
                 messageGB.transform.SetParent(ChatGui.instance.CurrentChannelText.gameObject.transform, false);
 
                 messageAttributes = messageGB.GetComponent<MessageAttributes>();
-                messageAttributes.messageText.text = this.Messages[i].ToString();
+                        messageAttributes.messageText.text = BWFManager.ReplaceAll(this.Messages[i].ToString(), Mask, Sources);
                 // txt.AppendLine(string.Format("{0}: {1}", this.Senders[i], this.Messages[i]));
+            }
+
+            if (this.GuideMessages.Count > 1)
+            {
+                for (int p = 0; p < this.GuideMessages.Count - 1; p++)
+                {
+                    Destroy(ChatGui.instance.guideAnswerListGB.gameObject.transform.GetChild(p).gameObject);
+                }
+            }
+            for (int i = 0; i < this.GuideMessages.Count; i++)
+            {
+                GameObject guideAnswerGB = Instantiate(ChatGui.instance.answerMessagePrefab);
+                guideAnswerGB.transform.SetParent(ChatGui.instance.guideAnswerListGB.gameObject.transform, false);
+
+                messageAttributes = guideAnswerGB.GetComponent<MessageAttributes>();
+                messageAttributes.messageText.text = this.GuideMessages[i].ToString();
             }
             // return txt.ToString();
         }

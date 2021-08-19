@@ -53,13 +53,23 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 	public bool isGuideQuestion;
 	public bool isAnswer;
 
-	[Header("Prefab Risposte")]
+	[Header("Settings Risposte")]
 
 	public GameObject answerPanelGB;
 
 	public GameObject answerMessagePrefab;
 
 	public GameObject answerListGB;
+
+	public GameObject answerContentGB;
+	public GameObject messageAnsweringGB;
+	public GameObject answerMessageQuestionPrefab;
+
+	[Header("Settings Domande Guida")]
+
+	public GameObject guideAnswerPanelGB;
+
+	public GameObject guideAnswerListGB;
 
 
 	[Header("Impostazioni Chat")]
@@ -92,7 +102,6 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 	public GameObject MessagePrefab;
 	public GameObject AnswerMessagePrefab;
 	public Text CurrentChannelText;     // set in inspector
-	public Toggle ChannelToggleToInstantiate; // set in inspector
 
 
 	public GameObject FriendListUiItemtoInstantiate;
@@ -107,6 +116,8 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 	public Text UserIdText; // set in inspector
 
 	public List<ChatType> MessagesType = new List<ChatType>();
+
+	public int LastMsgId = 0;
 
 
 	// private static string WelcomeText = "Welcome to chat. Type \\help to list commands.";
@@ -201,8 +212,6 @@ public class ChatGui : MonoBehaviour, IChatClientListener
         #endif
 
 		this.chatClient.Connect(this.chatAppSettings.AppId, "1.0", new Photon.Chat.AuthenticationValues(this.UserName));
-
-		this.ChannelToggleToInstantiate.gameObject.SetActive(false);
 		Debug.Log("Connecting as: " + this.UserName);
 
 	    // this.ConnectingLabel.SetActive(true);
@@ -270,10 +279,20 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 		if (this.InputFieldChat != null)
 		{
 			ChatType type = ChatType.Normal;
-			if (isQuestion)
+			if (isGuideQuestion)
+			{
+				type = ChatType.Guida;
+				isGuideQuestion = false;
+			}
+			else if (isQuestion)
 			{
 				type = ChatType.Domanda;
 				isQuestion = false;
+			}
+			else if (isAnswer)
+			{
+				type = ChatType.Rispondi;
+				CloseAnswerModal();
 			}
 		    this.SendChatMessage(this.InputFieldChat.text, type);
 			this.InputFieldChat.text = "";
@@ -401,7 +420,12 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 			}
 			else
 			{
-				this.chatClient.PublishMessage(this.selectedChannelName, inputLine, type);
+				if (messageAnsweringGB != null)
+					inputLine = $"{LastMsgId++}^{type}^{inputLine}^{messageAnsweringGB.name}";
+				else
+					inputLine = $"{LastMsgId++}^{type}^{inputLine}^{0}";
+
+				this.chatClient.PublishMessage(this.selectedChannelName, inputLine);
 			}
 		// }
 	}
@@ -481,14 +505,6 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 	public void OnSubscribed(string[] channels, bool[] results)
 	{
 		// in this demo, we simply send a message into each channel. This is NOT a must have!
-		foreach (string channel in channels)
-		{
-			if (this.ChannelToggleToInstantiate != null)
-			{
-				this.InstantiateChannelButton(channel);
-
-			}
-		}
 
 		Debug.Log("OnSubscribed: " + string.Join(", ", channels));
 
@@ -514,22 +530,6 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 
 		// Switch to the first newly created channel
 	    this.ShowChannel(channels[0]);
-	}
-
-	private void InstantiateChannelButton(string channelName)
-	{
-		if (this.channelToggles.ContainsKey(channelName))
-		{
-			Debug.Log("Skipping creation for an existing channel toggle.");
-			return;
-		}
-
-		Toggle cbtn = (Toggle)Instantiate(this.ChannelToggleToInstantiate);
-		cbtn.gameObject.SetActive(true);
-		cbtn.GetComponentInChildren<ChannelSelector>().SetChannel(channelName);
-		cbtn.transform.SetParent(this.ChannelToggleToInstantiate.transform.parent, false);
-
-		this.channelToggles.Add(channelName, cbtn);
 	}
 
 	private void InstantiateFriendButton(string friendId)
@@ -577,7 +577,7 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 		}
 	}
 
-	public void OnGetMessages(string channelName, string[] senders, object[] messages, ChatType[] types)
+	public void OnGetMessages(string channelName, string[] senders, object[] messages, string[] types)
 	{
 		if (channelName.Equals(this.selectedChannelName))
 		{
@@ -590,7 +590,7 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 	{
 		// as the ChatClient is buffering the messages for you, this GUI doesn't need to do anything here
 		// you also get messages that you sent yourself. in that case, the channelName is determinded by the target of your msg
-		this.InstantiateChannelButton(channelName);
+		// this.InstantiateChannelButton(channelName);
 
 		byte[] msgBytes = message as byte[];
 		if (msgBytes != null)
@@ -698,13 +698,41 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 
 	public void GuideQuestionButton()
 	{
-		isQuestion = false;
-		isAnswer = false;
-		isGuideQuestion = isGuideQuestion ? false : true;
+		if (AccountManager.instance.UserToken == 5 || AccountManager.instance.UserToken == 9)
+		{
+			guideAnswerPanelGB.SetActive(guideAnswerPanelGB.activeSelf ? false : true);
+		}
+		else
+		{
+			isQuestion = false;
+			isAnswer = false;
+			isGuideQuestion = isGuideQuestion ? false : true;
+		}
+		
 	}
 	public void AnswerButton()
 	{
 		answerPanelGB.SetActive(answerPanelGB.activeSelf ? false : true);
 	}
 
+	public void GuideQuestionPanel()
+	{
+		guideAnswerPanelGB.SetActive(false);
+	}
+
+	public void AnswerEvent(GameObject answerGB, string text, Sprite sprite)
+	{
+		MessageAttributes messageAttributes = answerContentGB.GetComponent<MessageAttributes>();
+		messageAttributes.messageText.text = text;
+		messageAttributes.avatarImage.sprite = sprite;
+		messageAnsweringGB = answerGB;
+		isAnswer = true;
+		ChatPanel.transform.GetChild(0).GetComponent<Animator>().Play("Chat_answer_open");
+	}
+
+	public void CloseAnswerModal()
+	{
+		isAnswer = false;
+		ChatPanel.transform.GetChild(0).GetComponent<Animator>().Play("Chat_answer_close");
+	}
 }

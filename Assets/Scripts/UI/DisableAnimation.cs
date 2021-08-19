@@ -6,6 +6,8 @@ public class DisableAnimation : MonoBehaviour
 {
     public static DisableAnimation instance;
 
+    public GameObject loader;
+
     void Awake()
     {
         instance = this;
@@ -18,5 +20,10 @@ public class DisableAnimation : MonoBehaviour
         }
         else
             UIHandler.instance.MethodLoginScreen();
+    }
+
+    public void VisibleLoading()
+    {
+        loader.SetActive(true);
     }
 }
