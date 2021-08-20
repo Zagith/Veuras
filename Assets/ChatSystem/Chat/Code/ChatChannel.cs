@@ -13,6 +13,7 @@ namespace Photon.Chat
 {
     using System.Collections.Generic;
     using System.Text;
+    using System.Linq;
     using Crosstales.BWF;
     using Crosstales.BWF.Model;
 
@@ -176,25 +177,30 @@ namespace Photon.Chat
                         messagePrefab = ChatGui.instance.AnswerMessagePrefab;
                         GameObject questionGB = Instantiate(ChatGui.instance.answerMessagePrefab);
                         questionGB.transform.SetParent(ChatGui.instance.answerListGB.gameObject.transform, false);
-                        questionGB.name = $"{this.LastMsgId[i]}";
+                        questionGB.name = $"Question_{this.Messages[i].ToString()}_{this.Senders[i]}";
                         messageAttributes = questionGB.GetComponent<MessageAttributes>();
                         messageAttributes.messageText.text = BWFManager.ReplaceAll(this.Messages[i].ToString(), Mask, Sources);
                     break;
                     case "Rispondi":
-                        GameObject parentMessage = GameObject.Find(this.AnswerMsgId[i]);
-                        GameObject answerGB = Instantiate(ChatGui.instance.answerMessageQuestionPrefab);
-                        answerGB.transform.SetParent(parentMessage.GetComponent<MessageAttributes>().AnswerListGB.transform, false);
-
-                        messageAttributes = answerGB.GetComponent<MessageAttributes>();
-                        messageAttributes.messageText.text = BWFManager.ReplaceAll(this.Messages[i].ToString(), Mask, Sources);
-                        parentMessage.GetComponent<MessageAttributes>().ArrowAnsers.SetActive(true);
+                        List<GameObject> parentMessage = Resources.FindObjectsOfTypeAll<GameObject>().Where(obj => obj.name ==  this.AnswerMsgId[i]).ToList();
+                        
+                        for (int p = 0; p < parentMessage.Count; p++)
+                        {
+                            GameObject answerGB = Instantiate(ChatGui.instance.answerMessageQuestionPrefab);
+                            answerGB.transform.SetParent(parentMessage[p].GetComponent<MessageAttributes>().AnswerListGB.transform, false);
+                            messageAttributes = answerGB.GetComponent<MessageAttributes>();
+                            messageAttributes.messageText.text = BWFManager.ReplaceAll(this.Messages[i].ToString(), Mask, Sources);
+                            parentMessage[p].GetComponent<MessageAttributes>().ArrowAnsers.SetActive(true);
+                        }
                     return;
                 }
                 GameObject messageGB = Instantiate(messagePrefab);
                 messageGB.transform.SetParent(ChatGui.instance.CurrentChannelText.gameObject.transform, false);
 
                 messageAttributes = messageGB.GetComponent<MessageAttributes>();
-                        messageAttributes.messageText.text = BWFManager.ReplaceAll(this.Messages[i].ToString(), Mask, Sources);
+                if (this.MessageType[i] == "Domanda")
+                    messageGB.name = $"Question_{this.Messages[i].ToString()}_{this.Senders[i]}";
+                messageAttributes.messageText.text = BWFManager.ReplaceAll(this.Messages[i].ToString(), Mask, Sources);
                 // txt.AppendLine(string.Format("{0}: {1}", this.Senders[i], this.Messages[i]));
             }
 
