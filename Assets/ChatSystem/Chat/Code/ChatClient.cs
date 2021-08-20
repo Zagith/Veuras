@@ -1121,10 +1121,6 @@ namespace Photon.Chat
                     splits.Add(split[1]);
                     splits2.Add(split[2]);
                     splits5.Add(split[3]);
-                    // else
-                    // {
-                    //     splits5.Add(i);
-                    // }
                     splits3.Add(senders[i]);
                 }
             }

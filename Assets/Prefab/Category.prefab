@@ -200,6 +200,7 @@ MonoBehaviour:
     type: 3}
   scrollSnapRect: {fileID: 342353954267168170}
   blurGB: {fileID: 4935698992324053626}
+  categoryName: {fileID: 342353954439746294}
 --- !u!1 &342353954439746288
 GameObject:
   m_ObjectHideFlags: 0

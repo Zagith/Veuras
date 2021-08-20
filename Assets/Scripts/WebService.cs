@@ -151,6 +151,7 @@ public class WebService : MonoBehaviour
             }
         }
         GetWatchedLives();
+        GetCategoryList();
         categoryAttributes.scrollSnapRect.InitializeScroll(container: categoryAttributes.viewPort.GetComponent<RectTransform>());
         CategoryManager.instance.InitializeHeaderLive();
         DockManager.instance.UpdateDockBar();
@@ -178,6 +179,59 @@ public class WebService : MonoBehaviour
             JSONArray jsonArray = JSON.Parse(Regex.Replace(results, @"\s+", " ")) as JSONArray;
 
             LiveManager.instance.UpdateLiveinstanceList(jsonArray);
+        }
+    }
+
+    public void GetCategoryList()
+    {
+        StartCoroutine(getCategoryList());
+    }
+    private IEnumerator getCategoryList()
+    {
+        using (UnityWebRequest w = UnityWebRequest.Get($"{WebService.instance.WebHost}getcategorylist.php"))
+        {
+            yield return w.SendWebRequest();
+            if (w.isNetworkError || w.isHttpError)
+            {
+                Debug.LogError(w.error);
+            }
+            
+            string results = w.downloadHandler.text;
+            JSONArray jsonArray = JSON.Parse(Regex.Replace(results, @"\s+", " ")) as JSONArray;
+
+            for (int i = 0; i < jsonArray.Count; i++)
+            {
+                CategoryDTO category = new CategoryDTO {
+                    CategoryId = jsonArray[i].AsObject["CategoryId"],
+                    Name = jsonArray[i].AsObject["Nome"]
+                };
+                CategoryManager.instance.categoryList.Add(category);
+            }
+            StartCoroutine(getCategoryLive());
+        }
+    }
+    private IEnumerator getCategoryLive()
+    {
+        using (UnityWebRequest ww = UnityWebRequest.Get($"{WebService.instance.WebHost}getlivecategory.php"))
+        {
+            yield return ww.SendWebRequest();
+            if (ww.isNetworkError || ww.isHttpError)
+            {
+               Debug.LogError(ww.error);
+            }
+                
+            string results = ww.downloadHandler.text;
+            JSONArray jsonArray = JSON.Parse(Regex.Replace(results, @"\s+", " ")) as JSONArray;
+
+            for (int i = 0; i < jsonArray.Count; i++)
+            {
+                LiveCategoryDTO category = new LiveCategoryDTO {
+                    CategoryId = jsonArray[i].AsObject["CategoryId"],
+                    LiveName = jsonArray[i].AsObject["LiveName"]
+                };
+                CategoryManager.instance.liveCategoryList.Add(category);
+            }
+            CategoryManager.instance.UpdateCategory();
         }
     }
 
