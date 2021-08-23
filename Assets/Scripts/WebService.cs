@@ -137,7 +137,6 @@ public class WebService : MonoBehaviour
             {
                 itemPage++;
                 singlePageCount++;
-                Debug.Log($"aaaa {singlePageCount}"); 
             }
         }
         if (itemPage != 2)
@@ -150,9 +149,9 @@ public class WebService : MonoBehaviour
                 break;
             }
         }
+        categoryAttributes.scrollSnapRect.InitializeScroll(container: categoryAttributes.viewPort.GetComponent<RectTransform>());
         GetWatchedLives();
         GetCategoryList();
-        categoryAttributes.scrollSnapRect.InitializeScroll(container: categoryAttributes.viewPort.GetComponent<RectTransform>());
         CategoryManager.instance.InitializeHeaderLive();
         DockManager.instance.UpdateDockBar();
         DisableAnimation.instance.ChangePage();

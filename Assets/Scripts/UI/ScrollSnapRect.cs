@@ -113,10 +113,6 @@ public class ScrollSnapRect : MonoBehaviour, IBeginDragHandler, IEndDragHandler,
         {
             _scrollRectRect = container.parent.GetComponent<RectTransform>();
         }
-        Debug.Log($"page count {_pageCount} child count {_container}");
-        if (pageCount != 0)
-            _pageCount = pageCount;
-        else
             _pageCount = _container.childCount;
 
         // is it horizontal or vertical scrollrect
