@@ -11,6 +11,9 @@ public class CategoryAttributes : MonoBehaviour
     public ScrollSnapRect scrollSnapRect;
 
     public GameObject blurGB;
+
+    [Header("Category Info")]
+    public TMPro.TMP_Text categoryName;
     
     
 }

@@ -3,19 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using SimpleJSON;
 using TMPro;
 
 public class CategoryManager : MonoBehaviour
 {
     public static CategoryManager instance;
 
-    public GameObject incomingCategory;
+    public GameObject categoryPrefab;
     public GameObject categoryParent;
 
     [Header("Header Components")]
     public TMP_Text headerTitle;
     public TMP_Text headerDescription;
     public Image headerImage;
+
+    public List<CategoryDTO> categoryList = new List<CategoryDTO>();
+    public List<LiveCategoryDTO> liveCategoryList = new List<LiveCategoryDTO>();
 
     void Awake()
     {
@@ -48,9 +52,84 @@ public class CategoryManager : MonoBehaviour
         headerDescription.text = lives[rnd].Description;
         headerImage.sprite = lives[rnd].Sprite;
         headerTitle.gameObject.GetComponent<Button>().onClick.AddListener(delegate { UIHandler.instance.LiveScreen(
-            LiveManager.instance.liveListGB.Where(n => n.name == $"live_{headerTitle.text}").FirstOrDefault());});
+        LiveManager.instance.liveListGB.Where(n => n.name == $"live_{headerTitle.text}").FirstOrDefault());});
     }
 
+    public void UpdateCategory()
+    {
+        if (categoryList.Count > 0 && liveCategoryList.Count > 0)
+        {
+            CategoryAttributes categoryAttributes;
+            for (int c = 0; c < categoryList.Count; c++)
+            {
+                List<LiveCategoryDTO> categoryLive = liveCategoryList.Where(l => l.CategoryId == categoryList[c].CategoryId).ToList();
+                if (categoryLive.Any()){
+                    categoryParent.GetComponent<VerticalLayoutGroup>().spacing += 400;
+                    // Initialize Category
+                    GameObject categoryPrefabs = Instantiate(categoryPrefab);
+                    categoryPrefabs.transform.SetParent(categoryParent.transform, false);
+                    categoryAttributes = categoryPrefabs.GetComponent<CategoryAttributes>();
+                    Debug.Log($"pageCount {categoryAttributes.viewPort.transform.parent.parent.name}");
+                    categoryAttributes.categoryName.text = categoryList[c].Name;
+
+                    // Initialize Live Category
+                    int pageCount = 1;
+                    int singlePageCount = 0;
+                    int itemPage = 0;
+                    GameObject livePrefab = null;
+                    GameObject listGB = categoryAttributes.viewPort;
+                    CategoryPrefab liveListUI = null;
+                    for (int i = 0; i < categoryLive.Count; i++)
+                    {
+                        Debug.Log($"count lives {pageCount} {itemPage}");
+                        LiveDTO liveList = LiveManager.instance.liveList.Where(l => l.Name == categoryLive[i].LiveName).First();
+                        if (singlePageCount == 0)
+                        {
+                            livePrefab = Instantiate(categoryAttributes.prefabLive);
+
+                            livePrefab.transform.SetParent(listGB.transform, false);
+
+                            liveListUI = livePrefab.GetComponent<CategoryPrefab>();
+
+                            pageCount++;
+                        }
+
+                        if (liveListUI != null)
+                        {
+                            Debug.Log($"Sprite {liveList.Sprite.name}");
+                            liveListUI.liveImage[itemPage].GetComponent<Image>().sprite = liveList.Sprite;
+                            liveListUI.liveImage[itemPage].GetComponent<Image>().preserveAspect = true;
+                            liveListUI.livesList[itemPage].name = $"{liveList.Name}";
+                            liveListUI.liveNameText[itemPage].text = $"{liveList.Name}";
+
+                        }
+
+                        if (singlePageCount == 1)
+                        {
+                            singlePageCount = 0;
+                            itemPage = 0;
+                        }
+                        else
+                        {
+                            itemPage++;
+                            singlePageCount++;
+                        }
+                    }
+                    if (itemPage != 2)
+                    {
+                        switch (itemPage)
+                        {
+                            case 1:
+                                Destroy(liveListUI.livesList[1]);
+                                // categoryAttributes.blurGB.SetActive(false);
+                            break;
+                        }
+                    }
+                    categoryAttributes.scrollSnapRect.InitializeScroll(container: categoryAttributes.viewPort.GetComponent<RectTransform>());
+                }
+            }
+        }
+    }
     public void UpdateContinueToWatch()
     {
         List<LiveInstanceDTO> liveList = LiveManager.instance.LiveInstance;

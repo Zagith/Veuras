@@ -9,6 +9,7 @@ public class AnswerButton : MonoBehaviour
     public void AnswerButtonEvent()
     {
         Transform parent = gameObject.transform.parent;
+        Debug.Log($"nameee {parent.gameObject.name}");
         ChatGui.instance.AnswerEvent(parent.gameObject, parent.GetChild(1).GetComponent<TMP_Text>().text, parent.GetChild(0).GetChild(0).GetComponent<Image>().sprite);
     }
 }
