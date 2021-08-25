@@ -207,7 +207,10 @@ public class WebService : MonoBehaviour
             }
         }
         categoryAttributes.scrollSnapRect.InitializeScroll(container: categoryAttributes.viewPort.GetComponent<RectTransform>());
-        GetWatchedLives();
+        if (AccountManager.instance.CanAutoLogin())
+        {
+            AccountManager.instance.InitializeUserAutoLogin();
+        }
         GetCategoryList();
         CategoryManager.instance.InitializeHeaderLive();
         DockManager.instance.UpdateDockBar();

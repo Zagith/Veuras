@@ -189,6 +189,19 @@ public class AuthManager : MonoBehaviour
         }
     }
 
+    public void Logout()
+    {
+        PlayerPrefs.DeleteKey("Email");
+        PlayerPrefs.DeleteKey("Password");
+        PlayerPrefs.DeleteKey("Name");
+        PlayerPrefs.DeleteKey("Surname");
+        PlayerPrefs.DeleteKey("UserId");
+        PlayerPrefs.DeleteKey("Bio");
+        PlayerPrefs.DeleteKey("AvatarLink");
+        PlayerPrefs.DeleteKey("Position");
+        UIHandler.instance.MethodLoginScreen();
+    }
+
     public void ChangeUserSettings()
     {
         StartCoroutine(changeUserSettings());

@@ -98,6 +98,7 @@ public class UIHandler : MonoBehaviour
             loginmethodUI.SetActive(true);
             homeUI.SetActive(false);
             openingUI.SetActive(false);
+            profilePage.SetActive(false);
         }
 
         public void DockBarVisibility(bool visible = false)
@@ -149,7 +150,7 @@ public class UIHandler : MonoBehaviour
             profilePage.SetActive(true);
             homeUI.SetActive(false);
         }
-        
+
         public void OpenProfilePage(GameObject live = null)
         {
             profilePage.SetActive(true);
