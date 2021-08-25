@@ -314,6 +314,8 @@ MonoBehaviour:
   avatarImage: {fileID: 8485933435369970475}
   messageText: {fileID: 4081407454069341200}
   AnswerListGB: {fileID: 0}
+  ArrowAnsers: {fileID: 0}
+  IsOpenedAnswer: 0
 --- !u!1 &7959558294235152139
 GameObject:
   m_ObjectHideFlags: 0

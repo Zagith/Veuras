@@ -21,6 +21,7 @@ public class UIHandler : MonoBehaviour
     public GameObject openingUI;
     public GameObject dockBarUI;
     public GameObject transitionDrag;
+    public GameObject profilePage;
 
 
     [Header("Modals")]
@@ -89,6 +90,7 @@ public class UIHandler : MonoBehaviour
             homeUI.SetActive(true);
             loginmethodUI.SetActive(false);
             openingUI.SetActive(false);
+            profilePage.SetActive(false);
             UIHandler.instance.DockBarVisibility(true);
         }
         public void MethodLoginScreen()
@@ -96,6 +98,7 @@ public class UIHandler : MonoBehaviour
             loginmethodUI.SetActive(true);
             homeUI.SetActive(false);
             openingUI.SetActive(false);
+            profilePage.SetActive(false);
         }
 
         public void DockBarVisibility(bool visible = false)
@@ -126,6 +129,7 @@ public class UIHandler : MonoBehaviour
             NamePickGui.instance.StartChat(live);
             live.SetActive(true);
             homeUI.SetActive(false);
+            profilePage.SetActive(false);
             UIHandler.instance.DockBarVisibility();
         }
 
@@ -139,6 +143,22 @@ public class UIHandler : MonoBehaviour
         public void ShowTransitionDrag()
         {
             transitionDrag.SetActive(true);
+        }
+
+        public void OpenProfilePage()
+        {
+            profilePage.SetActive(true);
+            homeUI.SetActive(false);
+        }
+
+        public void OpenProfilePage(GameObject live = null)
+        {
+            profilePage.SetActive(true);
+            homeUI.SetActive(false);
+            if (live != null)
+            {
+                live.SetActive(false);
+            }
         }
 
     #endregion

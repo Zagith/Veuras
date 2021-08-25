@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SimpleJSON;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class LiveManager : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class LiveManager : MonoBehaviour
     public List<LiveDTO> liveList = new List<LiveDTO>();
 
     public List<LiveInstanceDTO> LiveInstance = new List<LiveInstanceDTO>();
+
+    public List<Image> LiveImages = new List<Image>();
 
     [Header("Instantiate Lives")]
     [SerializeField] GameObject livePrefab;
@@ -80,6 +83,7 @@ public class LiveManager : MonoBehaviour
             liveListGB.Add(liveList1.gameObject);
             liveList1.SetActive(false);
             channelInitialize.Add(live.Name);
+            LiveImages.Add(liveList1.GetComponent<CloseLive>().avatarLive);
         }
         ChatGui.instance.InitializeChannels(channelInitialize);
         CategoryManager.instance.InitializeCategory();
