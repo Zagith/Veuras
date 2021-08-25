@@ -16,6 +16,7 @@ namespace Photon.Chat
     using System.Linq;
     using Crosstales.BWF;
     using Crosstales.BWF.Model;
+    using UnityEngine.UI;
 
     #if SUPPORTED_UNITY || NETFX_CORE
     using Hashtable = ExitGames.Client.Photon.Hashtable;
@@ -179,6 +180,8 @@ namespace Photon.Chat
                         questionGB.transform.SetParent(ChatGui.instance.answerListGB.gameObject.transform, false);
                         questionGB.name = $"Question_{this.Messages[i].ToString()}_{this.Senders[i]}";
                         messageAttributes = questionGB.GetComponent<MessageAttributes>();
+                        Button profileButton = messageAttributes.avatarImage.gameObject.transform.parent.gameObject.AddComponent<Button>();
+                        // profileButton.onClick.AddListener()
                         messageAttributes.messageText.text = BWFManager.ReplaceAll(this.Messages[i].ToString(), Mask, Sources);
                     break;
                     case "Rispondi":
@@ -275,5 +278,10 @@ namespace Photon.Chat
                 this.properties.Clear();
             }
         }
+
+        // internal void OpenProfile(int sender)
+        // {
+
+        // }
     }
 }

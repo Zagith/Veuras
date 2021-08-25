@@ -29,9 +29,9 @@ public class AuthManager : MonoBehaviour
 
     //Register variables
     [Header("Edit")]
-    public TMP_InputField usernameEditRegisterField;
-    public TMP_InputField emailEditRegisterField;
-    public TMP_Text nationEditField;
+    public TMP_InputField positionEditField;
+    public TMP_InputField bioEditField;
+    // public TMP_Text nationEditField;
 
     [HideInInspector]
     public string userToken;
@@ -117,8 +117,10 @@ public class AuthManager : MonoBehaviour
                 string results = w.downloadHandler.text;
                 Debug.Log(results);
                 JSONArray jsonArray = JSON.Parse(Regex.Replace(results, @"\s+", "")) as JSONArray;
-                AccountManager.instance.InitializeUser(_email, jsonArray[0].AsObject["Nome"], jsonArray[0].AsObject["Cognome"], jsonArray[0].AsObject["UserId"]);
-                AccountManager.instance.SetAutoLogin(_email, _password, jsonArray[0].AsObject["Nome"], jsonArray[0].AsObject["Cognome"], jsonArray[0].AsObject["UserId"]);
+                AccountManager.instance.InitializeUser(_email, jsonArray[0].AsObject["Nome"], jsonArray[0].AsObject["Cognome"],
+                    jsonArray[0].AsObject["UserId"], jsonArray[0].AsObject["Avatar"], jsonArray[0].AsObject["Posizione"], jsonArray[0].AsObject["Biografia"]);
+                AccountManager.instance.SetAutoLogin(_email, _password, jsonArray[0].AsObject["Nome"], jsonArray[0].AsObject["Cognome"], jsonArray[0].AsObject["UserId"],
+                    jsonArray[0].AsObject["Avatar"], jsonArray[0].AsObject["Posizione"], jsonArray[0].AsObject["Biografia"]);
                 UIHandler.instance.HomeScreen();
             }
             else
@@ -182,6 +184,43 @@ public class AuthManager : MonoBehaviour
                 {        
                     StartCoroutine(Login(_email, _password));
                     UIHandler.instance.ShowTransitionDrag();
+                }
+            }
+        }
+    }
+
+    public void ChangeUserSettings()
+    {
+        StartCoroutine(changeUserSettings());
+    }
+
+    private IEnumerator changeUserSettings()
+    {
+        ClearInputs();
+        if (positionEditField.text != "" || bioEditField.text != "") 
+        {
+            WWWForm form = new WWWForm();
+            form.AddField("Position", positionEditField.text);
+            form.AddField("Bio", bioEditField.text);
+            form.AddField("UserId", AccountManager.instance.UserToken);
+            
+            using (UnityWebRequest w = UnityWebRequest.Post($"{WebService.instance.WebHost}updateuserinfo.php", form))
+            {
+                yield return w.SendWebRequest();
+                if (w.isNetworkError || w.isHttpError)
+                {
+                    Debug.LogError(w.error);
+                }
+                string result = w.downloadHandler.text;
+
+                if (result == "errore")
+                {
+                    UIHandler.instance.ShowModalSettings("Email esistente", true);
+                    Debug.Log("[Registration] Missing Username");
+                }
+                else
+                {        
+                    AccountManager.instance.UpdateProfileInfo(positionEditField.text, bioEditField.text);
                 }
             }
         }
