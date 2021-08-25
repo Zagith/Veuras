@@ -81,13 +81,6 @@ public class AccountManager : MonoBehaviour
         Instantiate();
     }
 
-    void Start()
-    {
-        if (AccountManager.instance.CanAutoLogin())
-        {
-            AccountManager.instance.InitializeUserAutoLogin();
-        }
-    }
     void Instantiate()
     {
         DontDestroyOnLoad(gameObject);
@@ -116,7 +109,8 @@ public class AccountManager : MonoBehaviour
             _bioText = bio;
         if (!string.IsNullOrEmpty(avatar))
             WebService.instance.GetProfileAvatar(avatar);
-
+        
+        WebService.instance.GetWatchedLives();
         InitializeProfilePage();
     }
 
@@ -150,6 +144,7 @@ public class AccountManager : MonoBehaviour
         if (!string.IsNullOrEmpty(PlayerPrefs.GetString("AvatarLink")))
             WebService.instance.GetProfileAvatar(PlayerPrefs.GetString("AvatarLink"));
         
+        WebService.instance.GetWatchedLives();
         InitializeProfilePage();
     }
 
