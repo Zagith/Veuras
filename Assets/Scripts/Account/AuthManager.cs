@@ -80,7 +80,7 @@ public class AuthManager : MonoBehaviour
     public void RegisterButton()
     {
         //Call the register coroutine passing the email, password, and username
-        StartCoroutine(Register(emailRegisterField.text, passwordRegisterField.text, nameRegisterField.text, surnameRegisterField.text));
+        StartCoroutine(Register(emailRegisterField.text, passwordRegisterField.text, nameRegisterField.text, surnameRegisterField.text, passwordRegisterVerifyField.text));
     }
 
     private IEnumerator Login(string _email, string _password)
@@ -132,9 +132,9 @@ public class AuthManager : MonoBehaviour
         }
     }
 
-    private IEnumerator Register(string _email, string _password, string _name, string _surname)
+    private IEnumerator Register(string _email, string _password, string _name, string _surname, string confirmPassword)
     {
-        ClearInputs();
+        Debug.Log($"passwordRegisterField {_password} passwordRegisterField length {_password.Length} passwordRegisterVerifyField {confirmPassword}");
         if (_name == "")
         {
             //If the username field is blank show a warning
@@ -147,12 +147,12 @@ public class AuthManager : MonoBehaviour
             UIHandler.instance.ShowModalSettings("Cognome obbligatorio", true);
             Debug.Log("[Registration] Missing Username");
         }
-        else if (passwordLoginField.text.Length < 5)
+        else if (_password.Length < 5)
         {
             UIHandler.instance.ShowModalSettings("La password è troppo corta, minimo 5 caratteri", true);
             Debug.Log("[Registration] Password Does Not Match!");
         }
-        else if(passwordRegisterField.text != passwordRegisterVerifyField.text)
+        else if(_password != confirmPassword)
         {
             //If the password does not match show a warning
             UIHandler.instance.ShowModalSettings("La password non corrisponde", true);
@@ -160,6 +160,7 @@ public class AuthManager : MonoBehaviour
         }
         else 
         {
+            ClearInputs();
             WWWForm form = new WWWForm();
             form.AddField("Name", _name);
             form.AddField("Surname", _surname);
