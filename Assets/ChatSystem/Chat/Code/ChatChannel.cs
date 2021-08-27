@@ -183,6 +183,7 @@ namespace Photon.Chat
                         Button profileButton = messageAttributes.avatarImage.gameObject.transform.parent.gameObject.AddComponent<Button>();
                         // profileButton.onClick.AddListener()
                         messageAttributes.messageText.text = BWFManager.ReplaceAll(this.Messages[i].ToString(), Mask, Sources);
+                        messageAttributes.nameText.text = this.Senders[i].ToString();
                     break;
                     case "Rispondi":
                         List<GameObject> parentMessage = Resources.FindObjectsOfTypeAll<GameObject>().Where(obj => obj.name ==  this.AnswerMsgId[i]).ToList();
@@ -193,6 +194,7 @@ namespace Photon.Chat
                             answerGB.transform.SetParent(parentMessage[p].GetComponent<MessageAttributes>().AnswerListGB.transform, false);
                             messageAttributes = answerGB.GetComponent<MessageAttributes>();
                             messageAttributes.messageText.text = BWFManager.ReplaceAll(this.Messages[i].ToString(), Mask, Sources);
+                            messageAttributes.nameText.text = this.Senders[i].ToString();
                             parentMessage[p].GetComponent<MessageAttributes>().ArrowAnsers.SetActive(true);
                         }
                     return;
@@ -204,6 +206,7 @@ namespace Photon.Chat
                 if (this.MessageType[i] == "Domanda")
                     messageGB.name = $"Question_{this.Messages[i].ToString()}_{this.Senders[i]}";
                 messageAttributes.messageText.text = BWFManager.ReplaceAll(this.Messages[i].ToString(), Mask, Sources);
+                messageAttributes.nameText.text = this.Senders[i].ToString();
                 // txt.AppendLine(string.Format("{0}: {1}", this.Senders[i], this.Messages[i]));
             }
 
@@ -221,6 +224,8 @@ namespace Photon.Chat
 
                 messageAttributes = guideAnswerGB.GetComponent<MessageAttributes>();
                 messageAttributes.messageText.text = this.GuideMessages[i].ToString();
+                Debug.Log($"nome: {this.Senders[i].ToString()}");
+                messageAttributes.nameText.text = this.Senders[i].ToString();
             }
             // return txt.ToString();
         }
