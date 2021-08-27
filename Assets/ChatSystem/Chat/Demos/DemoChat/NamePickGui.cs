@@ -21,11 +21,11 @@ public class NamePickGui : MonoBehaviour
         this.chatNewComponent = FindObjectOfType<ChatGui>();
 
 
-        string prefsName = $"{AccountManager.instance.UserToken}";
-        if (!string.IsNullOrEmpty(prefsName))
-        {
-            this.idInput = prefsName;
-        }
+        // string prefsName = $"{AccountManager.instance.Name} {AccountManager.instance.Surname}";
+        // if (!string.IsNullOrEmpty(prefsName))
+        // {
+        //     this.idInput = prefsName;
+        // }
     }
 
 
@@ -45,7 +45,7 @@ public class NamePickGui : MonoBehaviour
         if (!string.IsNullOrEmpty(idInput))
             chatNewComponent.UserName = idInput;
         else
-            chatNewComponent.UserName = $"{AccountManager.instance.UserToken}";
+            chatNewComponent.UserName = $"{AccountManager.instance.Name} {AccountManager.instance.Surname}";
         chatNewComponent.channelIndex = Array.IndexOf(chatNewComponent.ChannelsToJoinOnConnect, live.name.Replace("live_", ""));
 		chatNewComponent.Connect();
         enabled = false;

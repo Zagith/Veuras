@@ -7,7 +7,10 @@ using TMPro;
 public class MessageAttributes : MonoBehaviour
 {
     public Image avatarImage;
+
     public TMP_Text messageText;
+    
+    public TMP_Text nameText;
 
     public GameObject AnswerListGB;
 
