@@ -237,7 +237,8 @@ public class WebService : MonoBehaviour
             Debug.Log($"STATUS {results}");
             JSONArray jsonArray = JSON.Parse(Regex.Replace(results, @"\s+", " ")) as JSONArray;
 
-            LiveManager.instance.UpdateLiveinstanceList(jsonArray);
+            if (jsonArray != null)
+                LiveManager.instance.UpdateLiveinstanceList(jsonArray);
         }
     }
 
