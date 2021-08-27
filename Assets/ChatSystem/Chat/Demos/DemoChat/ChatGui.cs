@@ -283,11 +283,13 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 			{
 				type = ChatType.Guida;
 				isGuideQuestion = false;
+				domandaGuidaButton.GetComponent<Image>().color = Color.white;
 			}
 			else if (isQuestion)
 			{
 				type = ChatType.Domanda;
 				isQuestion = false;
+				domandaGuidaButton.GetComponent<Image>().color = Color.white;
 			}
 			else if (isAnswer)
 			{
@@ -692,6 +694,8 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 	public void QuestionButton()
 	{
 		isQuestion = isQuestion ? false : true;
+		domandaButton.GetComponent<Image>().color = isQuestion ? Color.red : Color.white;
+		domandaGuidaButton.GetComponent<Image>().color = Color.white;
 		isAnswer = false;
 		isGuideQuestion = false;
 	}
@@ -707,6 +711,8 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 			isQuestion = false;
 			isAnswer = false;
 			isGuideQuestion = isGuideQuestion ? false : true;
+			domandaGuidaButton.GetComponent<Image>().color = isGuideQuestion ? Color.red : Color.white;
+			domandaButton.GetComponent<Image>().color = Color.white;
 		}
 		
 	}
