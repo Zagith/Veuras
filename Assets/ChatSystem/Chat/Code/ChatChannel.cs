@@ -224,8 +224,7 @@ namespace Photon.Chat
 
                 messageAttributes = guideAnswerGB.GetComponent<MessageAttributes>();
                 messageAttributes.messageText.text = this.GuideMessages[i].ToString();
-                Debug.Log($"nome: {this.Senders[i].ToString()}");
-                messageAttributes.nameText.text = this.Senders[i].ToString();
+                messageAttributes.nameText.text = this.GuideSenders[i].ToString();
             }
             // return txt.ToString();
         }

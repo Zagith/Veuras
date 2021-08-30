@@ -311,15 +311,15 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 		{
 			return;
 		}
-		if ("test".Equals(inputLine))
-		{
-			if (this.TestLength != this.testBytes.Length)
-			{
-				this.testBytes = new byte[this.TestLength];
-			}
+		// if ("test".Equals(inputLine))
+		// {
+		// 	if (this.TestLength != this.testBytes.Length)
+		// 	{
+		// 		this.testBytes = new byte[this.TestLength];
+		// 	}
 
-			this.chatClient.SendPrivateMessage(this.chatClient.AuthValues.UserId, this.testBytes, true);
-		}
+		// 	this.chatClient.SendPrivateMessage(this.chatClient.AuthValues.UserId, this.testBytes, true);
+		// }
 
 
 		bool doingPrivateChat = this.chatClient.PrivateChannels.ContainsKey(this.selectedChannelName);

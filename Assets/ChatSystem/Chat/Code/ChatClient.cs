@@ -1110,7 +1110,7 @@ namespace Photon.Chat
             for (int i = 0; i < messages.Length; i++)
             {
                 string[] split = messages[i].ToString().Split('^');
-                if (split[0] == "Guida")
+                if (split[1] == "Guida")
                 {
                     guideMessage.Add(split[2]);
                     guideSender.Add(senders[i]);
