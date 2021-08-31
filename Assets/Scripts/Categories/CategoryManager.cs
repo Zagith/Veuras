@@ -23,7 +23,7 @@ public class CategoryManager : MonoBehaviour
     public List<CategoryDTO> categoryList = new List<CategoryDTO>();
     public List<LiveCategoryDTO> liveCategoryList = new List<LiveCategoryDTO>();
 
-    private bool isContinueToWatchActive = false;
+    public bool isContinueToWatchActive = false;
 
     public bool isContinueToWatchActiveInRun = false;
 
