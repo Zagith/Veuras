@@ -289,7 +289,7 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 			{
 				type = ChatType.Domanda;
 				isQuestion = false;
-				domandaGuidaButton.GetComponent<Image>().color = Color.white;
+				domandaButton.GetComponent<Image>().color = Color.white;
 			}
 			else if (isAnswer)
 			{
