@@ -95,6 +95,7 @@ public class LiveManager : MonoBehaviour
         int liveId = LiveManager.instance.liveList.Where(s => s.Name == name).Select(n => n.LiveId).FirstOrDefault();
         if (!LiveManager.instance.LiveInstance.Where(s => s.LiveId == liveId).Any())
         {
+            CategoryManager.instance.isContinueToWatchActiveInRun = true;
             UpdateLiveinstanceList(liveId);
         }
     }

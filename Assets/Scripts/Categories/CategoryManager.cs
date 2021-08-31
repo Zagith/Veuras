@@ -23,6 +23,10 @@ public class CategoryManager : MonoBehaviour
     public List<CategoryDTO> categoryList = new List<CategoryDTO>();
     public List<LiveCategoryDTO> liveCategoryList = new List<LiveCategoryDTO>();
 
+    private bool isContinueToWatchActive = false;
+
+    public bool isContinueToWatchActiveInRun = false;
+
     void Awake()
     {
         instance = this;
@@ -67,7 +71,17 @@ public class CategoryManager : MonoBehaviour
             {
                 List<LiveCategoryDTO> categoryLive = liveCategoryList.Where(l => l.CategoryId == categoryList[c].CategoryId).ToList();
                 if (categoryLive.Any()){
-                    offset -= 600f;
+                    if (!isContinueToWatchActive)
+                    {
+                        if (c > 0)
+                        {
+                            offset -= 600f;
+                        }
+                    }
+                    else
+                    {
+                        offset -= 600f;
+                    }
                     Debug.Log($"entro in c {c}");
                     // categoryParent.GetComponent<VerticalLayoutGroup>().spacing += 400;
                     // Initialize Category
@@ -140,9 +154,17 @@ public class CategoryManager : MonoBehaviour
     public void UpdateContinueToWatch()
     {
         List<LiveInstanceDTO> liveList = LiveManager.instance.LiveInstance;
-        CategoryManager.instance.categoryParent.transform.GetChild(0).gameObject.SetActive(true);
         if (liveList.Count > 0)
         {
+            float offset = 0f;
+            isContinueToWatchActive = true;
+            if (isContinueToWatchActiveInRun)
+            {
+                offset -= 600f;
+                ContentCategory.offsetMin = new Vector2(ContentCategory.offsetMin.x, offset);
+                isContinueToWatchActiveInRun = false;
+            }
+            CategoryManager.instance.categoryParent.transform.GetChild(0).gameObject.SetActive(true);
             int pageCount = 1;
             int singlePageCount = 0;
             int itemPage = 0;
@@ -216,7 +238,8 @@ public class CategoryManager : MonoBehaviour
             {
                 Destroy(listGB.transform.GetChild(p).gameObject);
             }
-        }        
+        }
+        isContinueToWatchActive = false;
         CategoryManager.instance.categoryParent.transform.GetChild(0).gameObject.SetActive(false);
     }
 }
