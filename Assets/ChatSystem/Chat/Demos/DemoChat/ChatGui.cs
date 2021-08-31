@@ -728,6 +728,7 @@ public class ChatGui : MonoBehaviour, IChatClientListener
 
 	public void AnswerEvent(GameObject answerGB, string text, Sprite sprite)
 	{
+		answerPanelGB.SetActive(false);
 		MessageAttributes messageAttributes = answerContentGB.GetComponent<MessageAttributes>();
 		messageAttributes.messageText.text = text;
 		messageAttributes.avatarImage.sprite = sprite;
