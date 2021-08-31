@@ -13,6 +13,8 @@ public class CategoryManager : MonoBehaviour
     public GameObject categoryPrefab;
     public GameObject categoryParent;
 
+    public RectTransform ContentCategory;
+
     [Header("Header Components")]
     public TMP_Text headerTitle;
     public TMP_Text headerDescription;
@@ -60,11 +62,14 @@ public class CategoryManager : MonoBehaviour
         if (categoryList.Count > 0 && liveCategoryList.Count > 0)
         {
             CategoryAttributes categoryAttributes;
+            float offset = 0f;
             for (int c = 0; c < categoryList.Count; c++)
             {
                 List<LiveCategoryDTO> categoryLive = liveCategoryList.Where(l => l.CategoryId == categoryList[c].CategoryId).ToList();
                 if (categoryLive.Any()){
-                    categoryParent.GetComponent<VerticalLayoutGroup>().spacing += 400;
+                    offset -= 600f;
+                    Debug.Log($"entro in c {c}");
+                    // categoryParent.GetComponent<VerticalLayoutGroup>().spacing += 400;
                     // Initialize Category
                     GameObject categoryPrefabs = Instantiate(categoryPrefab);
                     categoryPrefabs.transform.SetParent(categoryParent.transform, false);
@@ -129,6 +134,7 @@ public class CategoryManager : MonoBehaviour
                     DisableAnimation.instance.ChangePage();
                 }
             }
+            ContentCategory.offsetMin = new Vector2(ContentCategory.offsetMin.x, offset);
         }
     }
     public void UpdateContinueToWatch()
