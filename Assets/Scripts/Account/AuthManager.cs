@@ -117,10 +117,13 @@ public class AuthManager : MonoBehaviour
                 string results = w.downloadHandler.text;
                 Debug.Log(results);
                 JSONArray jsonArray = JSON.Parse(Regex.Replace(results, @"\s+", "")) as JSONArray;
+                
                 AccountManager.instance.InitializeUser(_email, jsonArray[0].AsObject["Nome"], jsonArray[0].AsObject["Cognome"],
                     jsonArray[0].AsObject["UserId"], jsonArray[0].AsObject["Avatar"], jsonArray[0].AsObject["Posizione"], jsonArray[0].AsObject["Biografia"]);
+                
                 AccountManager.instance.SetAutoLogin(_email, _password, jsonArray[0].AsObject["Nome"], jsonArray[0].AsObject["Cognome"], jsonArray[0].AsObject["UserId"],
                     jsonArray[0].AsObject["Avatar"], jsonArray[0].AsObject["Posizione"], jsonArray[0].AsObject["Biografia"]);
+                
                 UIHandler.instance.HomeScreen();
             }
             else
@@ -200,6 +203,7 @@ public class AuthManager : MonoBehaviour
         PlayerPrefs.DeleteKey("Bio");
         PlayerPrefs.DeleteKey("AvatarLink");
         PlayerPrefs.DeleteKey("Position");
+        CategoryManager.instance.RemoveContinueToWhatch();
         UIHandler.instance.MethodLoginScreen();
     }
 

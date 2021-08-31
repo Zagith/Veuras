@@ -99,6 +99,7 @@ public class UIHandler : MonoBehaviour
             homeUI.SetActive(false);
             openingUI.SetActive(false);
             profilePage.SetActive(false);
+            DockBarChat();
         }
 
         public void DockBarVisibility(bool visible = false)

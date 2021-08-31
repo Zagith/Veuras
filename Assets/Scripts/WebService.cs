@@ -24,7 +24,6 @@ public class WebService : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        PlayerPrefs.SetString("AvatarLink", "10.jpg");
         Instantiate();
     }
     
@@ -66,7 +65,7 @@ public class WebService : MonoBehaviour
             {
                 string result = wwww.downloadHandler.text;
                 byte[] bytes = wwww.downloadHandler.data;
-                Debug.Log($"avatar link: {bytes.Length}");
+                Debug.Log($"avatar link: {link}");
                 Texture2D texture = new Texture2D(2,2);
                 texture.LoadImage(bytes);
                 Sprite sprite = Sprite.Create(texture, new Rect(0,0, texture.width, texture.height), new Vector2(.5f,.5f));   

@@ -126,6 +126,7 @@ public class AccountManager : MonoBehaviour
             PlayerPrefs.SetString("Position", position);
         if (!string.IsNullOrEmpty(bio))
             PlayerPrefs.SetString("Bio", bio);
+        Debug.Log($"AvatarLink pref {avatar}");
         if (!string.IsNullOrEmpty(avatar))
             PlayerPrefs.SetString("AvatarLink", avatar);
     }

@@ -198,4 +198,19 @@ public class CategoryManager : MonoBehaviour
             categoryAttributes.scrollSnapRect.InitializeScroll(container: categoryAttributes.viewPort.GetComponent<RectTransform>());
         }
     }
+
+    public void RemoveContinueToWhatch()
+    {
+        LiveManager.instance.LiveInstance.Clear();
+        CategoryAttributes categoryAttributes = CategoryManager.instance.categoryParent.transform.GetChild(0).GetComponent<CategoryAttributes>();
+        GameObject listGB = categoryAttributes.viewPort;
+        if (listGB.transform.childCount > 0)
+        {
+            for (int p = 0; p < listGB.transform.childCount; p++)
+            {
+                Destroy(listGB.transform.GetChild(p).gameObject);
+            }
+        }        
+        CategoryManager.instance.categoryParent.transform.GetChild(0).gameObject.SetActive(false);
+    }
 }
