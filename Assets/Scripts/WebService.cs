@@ -214,7 +214,6 @@ public class WebService : MonoBehaviour
         GetCategoryList();
         CategoryManager.instance.InitializeHeaderLive();
         DockManager.instance.UpdateDockBar();
-        DisableAnimation.instance.ChangePage();
     }
 
     // Get whatched lives
@@ -256,11 +255,13 @@ public class WebService : MonoBehaviour
                 Debug.LogError(w.error);
             }
             
+            Debug.Log($"[CATEGORYLIST REQUEST WWW] {w}");
             string results = w.downloadHandler.text;
+            Debug.Log($"[CATEGORYLIST REQUEST] {results}");
             JSONArray jsonArray = JSON.Parse(Regex.Replace(results, @"\s+", " ")) as JSONArray;
-
             for (int i = 0; i < jsonArray.Count; i++)
             {
+                Debug.Log($"[Category GET] {jsonArray[i].AsObject["CategoryId"]} {jsonArray[i].AsObject["Nome"]}");
                 CategoryDTO category = new CategoryDTO {
                     CategoryId = jsonArray[i].AsObject["CategoryId"],
                     Name = jsonArray[i].AsObject["Nome"]
@@ -285,6 +286,7 @@ public class WebService : MonoBehaviour
 
             for (int i = 0; i < jsonArray.Count; i++)
             {
+            Debug.Log($"[CategoryList GET] {jsonArray[i].AsObject["CategoryId"]} {jsonArray[i].AsObject["LiveName"]}");
                 LiveCategoryDTO category = new LiveCategoryDTO {
                     CategoryId = jsonArray[i].AsObject["CategoryId"],
                     LiveName = jsonArray[i].AsObject["LiveName"]

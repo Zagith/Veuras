@@ -126,6 +126,7 @@ public class CategoryManager : MonoBehaviour
                         }
                     }
                     categoryAttributes.scrollSnapRect.InitializeScroll(container: categoryAttributes.viewPort.GetComponent<RectTransform>());
+                    DisableAnimation.instance.ChangePage();
                 }
             }
         }
